@@ -1,7 +1,8 @@
-import "../../styles/globals.css";
 import Head from "next/head";
 import type { AppProps } from "next/app";
 import { format } from "date-fns";
+
+import "../../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -21,7 +22,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <div className="h-14 flex items-center px-4 bg-gray-50">
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-2xl font-bold">
           {format(new Date(), "eeee, LLLL do")}
         </h2>
       </div>
