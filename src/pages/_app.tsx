@@ -6,10 +6,7 @@ import "../../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div
-      className="flex flex-col h-screen"
-      style={{ WebkitTapHighlightColor: "transparent" }}
-    >
+    <div className="flex flex-col h-screen">
       <Head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -18,8 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
         />
         <title>Habit Tracker</title>
-        <meta name="theme-color" content="rgb(249 250 251)" />
-        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="manifest" href="/manifest.json" />
       </Head>
       <div className="h-14 flex items-center px-4 bg-gray-50">
         <h2 className="text-2xl font-bold">

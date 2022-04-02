@@ -1,9 +1,0 @@
-{
-  "name": "Habit Tracker PWA",
-  "short_name": "Habit Tracker",
-  "theme_color": "rgb(249 250 251)",
-  "display": "standalone",
-  "orientation": "portrait",
-  "scope": "/",
-  "start_url": "/"
-}
