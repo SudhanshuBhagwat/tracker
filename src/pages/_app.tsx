@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
         />
-        <title>Tracker</title>
+        <title>Habit Tracker</title>
         <meta name="theme-color" content="rgb(249 250 251)" />
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
