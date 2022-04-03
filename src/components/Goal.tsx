@@ -1,4 +1,6 @@
+import { collection, doc, updateDoc } from "firebase/firestore";
 import React, { useState } from "react";
+import { firestore } from "../config/firebase";
 import type { Goal as GoalType } from "../types";
 import Checkbox from "./Checkbox";
 
@@ -13,9 +15,20 @@ const Goal: React.FC<Props> = ({ goal }) => {
     let timeSpan;
     if (goal.everyday) {
       timeSpan = "Everyday";
+    } else if (goal.weekly) {
+      timeSpan = `${goal.weekly.length} times per week`;
     }
 
     return timeSpan;
+  }
+
+  async function handleDone() {
+    const id = goal.id;
+    if (id) {
+      await updateDoc(doc(firestore, "habits", id), {
+        isDone: !isDone,
+      });
+    }
   }
 
   return (
@@ -24,7 +37,13 @@ const Goal: React.FC<Props> = ({ goal }) => {
         <h3 className="text-md font-medium">{goal.title}</h3>
         <span className="text-xs mt-[2px] text-gray-400">{getSpan()}</span>
       </div>
-      <Checkbox isDone={isDone} setIsDone={setIsDone} />
+      <Checkbox
+        isDone={isDone}
+        setIsDone={async (value) => {
+          await handleDone();
+          return setIsDone(value);
+        }}
+      />
     </div>
   );
 };
