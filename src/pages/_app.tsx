@@ -1,11 +1,11 @@
 import Head from "next/head";
 import type { AppProps } from "next/app";
-import { format } from "date-fns";
 import { Suspense } from "react";
 
 import "../../styles/globals.css";
 import Spinner from "../components/Spinner";
 import Footer from "../components/Footer";
+import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -21,16 +21,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#F9FAFB" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
-      <div className="h-14 flex items-center px-4 bg-gray-50 fixed inset-0 z-10">
-        <h2 className="text-2xl font-bold">
-          {format(new Date(), "eeee, LLLL do")}
-        </h2>
-      </div>
-      <Suspense fallback={<Spinner />}>
-        <main className="flex-1 mt-14 pb-14">
+      <Header />
+      <main className="flex-1 mt-14 pb-14">
+        <Suspense fallback={<Spinner />}>
           <Component {...pageProps} />
-        </main>
-      </Suspense>
+        </Suspense>
+      </main>
       <Footer />
     </div>
   );
