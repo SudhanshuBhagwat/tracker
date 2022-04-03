@@ -10,8 +10,6 @@ const Goal: React.FC<Props> = ({ goal }) => {
   const [isDone, setIsDone] = useState(goal.isDone);
 
   function getSpan() {
-    console.log(goal);
-
     let timeSpan;
     if (goal.everyday) {
       timeSpan = "Everyday";

@@ -21,7 +21,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 // connectAuthEmulator(auth, "http://localhost:9090");
 
 let firestore: Firestore;
-if (process.env.NODE_ENV) {
+if (process.env.NODE_ENV === "development") {
   firestore = getFirestore();
   connectFirestoreEmulator(firestore, "localhost", 9091);
 } else {
