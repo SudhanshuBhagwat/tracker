@@ -9,8 +9,13 @@ interface Props {
 const Modal: React.FC<Props> = ({ open, onClose, children }) => {
   return (
     <Transition.Root static show={open} as={Fragment}>
-      <Dialog static as="div" className="fixed z-10 inset-0" onClose={onClose}>
-        <div className="flex flex-col justify-center h-full px-1 pt-4 text-center sm:block sm:p-0">
+      <Dialog
+        static
+        as="div"
+        className="fixed z-10 inset-0 select-none"
+        onClose={onClose}
+      >
+        <div className="flex flex-col justify-center h-full pt-4 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

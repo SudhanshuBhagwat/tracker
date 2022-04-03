@@ -1,5 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import {
+  connectFirestoreEmulator,
+  Firestore,
+  getFirestore,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,8 +20,13 @@ const firebaseApp = initializeApp(firebaseConfig);
 // export const auth = getAuth();
 // connectAuthEmulator(auth, "http://localhost:9090");
 
-const firestore = getFirestore();
-connectFirestoreEmulator(firestore, "localhost", 9091);
+let firestore: Firestore;
+if (process.env.NODE_ENV) {
+  firestore = getFirestore();
+  connectFirestoreEmulator(firestore, "localhost", 9091);
+} else {
+  firestore = getFirestore(firebaseApp);
+}
 
 export { firestore };
 export default firebaseApp;
