@@ -24,7 +24,7 @@ const Home: NextPage = () => {
         snapshot.forEach((doc) => {
           const data = doc.data();
           const weekday = format(new Date(), "eeee");
-          const goal = {
+          const goal: GoalType = {
             id: doc.id,
             isDone: data.isDone,
             title: data.title,
@@ -32,6 +32,7 @@ const Home: NextPage = () => {
             months: data.months,
             weekly: data.weekly,
             createdAt: data.createdAt,
+            completed: data.completed,
           };
           if (data.everyday) {
             todaysGoals.push(goal);
@@ -94,7 +95,7 @@ const Home: NextPage = () => {
               })}
             </div>
           ) : (
-            <div className="h-full flex flex-col justify-center items-center space-y-2 -mt-6">
+            <div className="flex flex-col justify-center items-center space-y-2 mt-20">
               <span>No Goals added</span>
               <span className="flex items-center">
                 Press

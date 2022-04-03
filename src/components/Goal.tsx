@@ -1,4 +1,5 @@
-import { collection, doc, updateDoc } from "firebase/firestore";
+import { endOfWeek, format, isThisWeek, startOfWeek } from "date-fns";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { firestore } from "../config/firebase";
 import type { Goal as GoalType } from "../types";
@@ -17,7 +18,16 @@ const Goal: React.FC<Props> = ({ goal, disable = false }) => {
     if (goal.everyday) {
       timeSpan = "Everyday";
     } else if (goal.weekly) {
-      timeSpan = `${goal.weekly.length} times per week`;
+      const dates = goal.completed;
+      const thisWeekDates = dates.filter((date) => isThisWeek(new Date(date)));
+      const finalGoalsDone = thisWeekDates.map((date) => {
+        const weekday = format(new Date(date), "eeee");
+        if (goal.weekly.includes(weekday)) {
+          return weekday;
+        }
+      });
+
+      timeSpan = `${finalGoalsDone.length}/${goal.weekly.length} times done this week`;
     }
 
     return timeSpan;
@@ -26,9 +36,16 @@ const Goal: React.FC<Props> = ({ goal, disable = false }) => {
   async function handleDone() {
     const id = goal.id;
     if (id) {
-      await updateDoc(doc(firestore, "habits", id), {
-        isDone: !isDone,
-      });
+      if (isDone) {
+        console.log(isDone);
+        await updateDoc(doc(firestore, "habits", id), {
+          completed: arrayUnion(format(new Date(), "dd-MM-yyyy")),
+        });
+      } else {
+        await updateDoc(doc(firestore, "habits", id), {
+          completed: arrayRemove(format(new Date(), "dd-MM-yyyy")),
+        });
+      }
     }
   }
 
@@ -43,7 +60,7 @@ const Goal: React.FC<Props> = ({ goal, disable = false }) => {
           isDone={isDone}
           setIsDone={async (value) => {
             await handleDone();
-            return setIsDone(value);
+            return setIsDone(!value);
           }}
         />
       )}
