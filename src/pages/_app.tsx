@@ -7,8 +7,11 @@ import "../../styles/globals.css";
 import Spinner from "../components/Spinner";
 import Link from "next/link";
 import { CashIcon, CogIcon, SparklesIcon } from "@heroicons/react/outline";
+import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col h-screen select-none">
       <Head>
@@ -37,17 +40,33 @@ function MyApp({ Component, pageProps }: AppProps) {
           <ul className="w-full flex items-center justify-between">
             <li>
               <Link passHref={true} href="/">
-                <SparklesIcon className="w-6 h-6" />
+                <SparklesIcon
+                  className={`w-6 h-6 cursor-pointer ${
+                    router.pathname === "/" ? "text-blue-400" : "text-gray-400"
+                  }`}
+                />
               </Link>
             </li>
             <li>
               <Link passHref={true} href="/money">
-                <CashIcon className="w-6 h-6" />
+                <CashIcon
+                  className={`w-6 h-6 cursor-pointer ${
+                    router.pathname === "/money"
+                      ? "text-blue-400"
+                      : "text-gray-400"
+                  }`}
+                />
               </Link>
             </li>
             <li>
               <Link passHref={true} href="/settings">
-                <CogIcon className="w-6 h-6" />
+                <CogIcon
+                  className={`w-6 h-6 cursor-pointer ${
+                    router.pathname === "/settings"
+                      ? "text-blue-400"
+                      : "text-gray-400"
+                  }`}
+                />
               </Link>
             </li>
           </ul>
