@@ -1,5 +1,5 @@
 import { Disclosure, RadioGroup, Switch } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Goal } from "../types";
 import Checkbox from "./Checkbox";
 import Modal from "./Modal";
@@ -27,16 +27,22 @@ const DAYS: Days = {
 const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   const [title, setTitle] = useState<string>("");
   const [isEveryday, setIsEveryday] = useState<boolean>(false);
-  const [isWeekly, setIsWeekly] = useState<boolean>(false);
   const [times, setTimes] = useState<number>(1);
   const [months, setMonths] = useState<number>(1);
   const [days, setDays] = useState<Days>(DAYS);
+  let closeFunction: () => void;
+  let renderOpen: boolean = false;
+
+  // useEffect(() => {
+  //   if (renderOpen) {
+  //     setIsEveryday(false);
+  //   }
+  // }, [renderOpen]);
 
   async function handleIsOpen() {
     setIsOpen(false);
     setTitle("");
     setIsEveryday(false);
-    setIsWeekly(false);
   }
 
   function getWeekString() {
@@ -116,8 +122,7 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
               isDone={isEveryday}
               setIsDone={() => {
                 setIsEveryday((value) => {
-                  const newValue = !value;
-                  setIsWeekly(newValue ? false : true);
+                  closeFunction();
                   return !value;
                 });
               }}
@@ -125,51 +130,112 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
           </div>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
             <Disclosure>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button className="flex justify-between items-center w-full text-lg font-medium text-left">
-                    <span>Is this a Weekly goal?</span>
-                    <Switch
-                      as="div"
-                      checked={isWeekly}
-                      onChange={() => {
-                        setIsEveryday(false);
-                        setIsWeekly((v) => !v);
-                      }}
-                      className={`${
-                        isWeekly ? "bg-blue-400" : "bg-gray-200"
-                      } relative inline-flex items-center h-8 rounded-full w-14 transition`}
-                    >
-                      <span className="sr-only">Enable notifications</span>
-                      <span
+              {({ open, close }) => {
+                closeFunction = close;
+                renderOpen = open;
+                if (open) {
+                  setTimeout(() => {
+                    setIsEveryday(false);
+                  }, 0);
+                }
+                return (
+                  <>
+                    <Disclosure.Button className="flex justify-between items-center w-full text-lg font-medium text-left">
+                      <span>Is this a Weekly goal?</span>
+                      <Switch
+                        as="div"
+                        checked={open}
+                        onChange={() => {
+                          setIsEveryday(false);
+                        }}
                         className={`${
-                          isWeekly ? "translate-x-7" : "translate-x-1"
-                        } inline-block w-6 h-6 transform bg-white rounded-full transition ease-in-out duration-150`}
-                      />
-                    </Switch>
-                  </Disclosure.Button>
-                  <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
-                    <div className="w-full flex flex-col items-start space-y-3">
-                      <span className="text-gray-400 text-base text-left">
-                        {times} {times > 1 ? "times" : "time"} per week
-                      </span>
-                      <RadioGroup
-                        value={times}
-                        onChange={setTimes}
-                        className="w-full"
+                          open ? "bg-blue-400" : "bg-gray-200"
+                        } relative inline-flex items-center h-8 rounded-full w-14 transition`}
                       >
-                        <RadioGroup.Label className="sr-only">
-                          Frequency
-                        </RadioGroup.Label>
-                        <div className="flex justify-center">
-                          <span className="relative z-0 inline-flex justify-between w-full">
-                            {[...Array(6).keys()]
-                              .map((el) => el + 1)
-                              .map((number) => {
+                        <span className="sr-only">Enable notifications</span>
+                        <span
+                          className={`${
+                            open ? "translate-x-7" : "translate-x-1"
+                          } inline-block w-6 h-6 transform bg-white rounded-full transition ease-in-out duration-150`}
+                        />
+                      </Switch>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
+                      <div className="w-full flex flex-col items-start space-y-3">
+                        <span className="text-gray-400 text-base text-left">
+                          {times} {times > 1 ? "times" : "time"} per week
+                        </span>
+                        <RadioGroup
+                          value={times}
+                          onChange={setTimes}
+                          className="w-full"
+                        >
+                          <RadioGroup.Label className="sr-only">
+                            Frequency
+                          </RadioGroup.Label>
+                          <div className="flex justify-center">
+                            <span className="relative z-0 inline-flex justify-between w-full">
+                              {[...Array(6).keys()]
+                                .map((el) => el + 1)
+                                .map((number) => {
+                                  return (
+                                    <RadioGroup.Option
+                                      key={number}
+                                      value={number}
+                                      className="transition"
+                                    >
+                                      {({ checked }) => (
+                                        <span
+                                          className={`${
+                                            checked
+                                              ? "bg-blue-400 text-white border-blue-400"
+                                              : "text-gray-400 border-gray-200"
+                                          } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
+                                        >
+                                          {number}
+                                        </span>
+                                      )}
+                                    </RadioGroup.Option>
+                                  );
+                                })}
+                            </span>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                      <div className="w-full flex flex-col items-start space-y-3">
+                        <span className="text-gray-400 text-base">
+                          On {getWeekString()}
+                        </span>
+                        <Switch.Group>
+                          <Switch.Label className="sr-only">
+                            Days of the week
+                          </Switch.Label>
+                          <div className="flex justify-center w-full">
+                            <span className="relative z-0 inline-flex justify-between w-full">
+                              {Object.keys(days).map((day) => {
                                 return (
-                                  <RadioGroup.Option
-                                    key={number}
-                                    value={number}
+                                  <Switch
+                                    key={day}
+                                    checked={days[day]}
+                                    onChange={() => {
+                                      const isTrue = days[day];
+                                      const enabledDays = Object.keys(
+                                        days
+                                      ).filter((day) => days[day]);
+
+                                      if (
+                                        (!isTrue &&
+                                          enabledDays.length < times) ||
+                                        isTrue
+                                      ) {
+                                        setDays((old) => {
+                                          return {
+                                            ...old,
+                                            [day]: !days[day],
+                                          };
+                                        });
+                                      }
+                                    }}
                                     className="transition"
                                   >
                                     {({ checked }) => (
@@ -180,72 +246,20 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                                             : "text-gray-400 border-gray-200"
                                         } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
                                       >
-                                        {number}
+                                        {day.charAt(0)}
                                       </span>
                                     )}
-                                  </RadioGroup.Option>
+                                  </Switch>
                                 );
                               })}
-                          </span>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="w-full flex flex-col items-start space-y-3">
-                      <span className="text-gray-400 text-base">
-                        On {getWeekString()}
-                      </span>
-                      <Switch.Group>
-                        <Switch.Label className="sr-only">
-                          Days of the week
-                        </Switch.Label>
-                        <div className="flex justify-center w-full">
-                          <span className="relative z-0 inline-flex justify-between w-full">
-                            {Object.keys(days).map((day) => {
-                              return (
-                                <Switch
-                                  key={day}
-                                  checked={days[day]}
-                                  onChange={() => {
-                                    const isTrue = days[day];
-                                    const enabledDays = Object.keys(
-                                      days
-                                    ).filter((day) => days[day]);
-
-                                    if (
-                                      (!isTrue && enabledDays.length < times) ||
-                                      isTrue
-                                    ) {
-                                      setDays((old) => {
-                                        return {
-                                          ...old,
-                                          [day]: !days[day],
-                                        };
-                                      });
-                                    }
-                                  }}
-                                  className="transition"
-                                >
-                                  {({ checked }) => (
-                                    <span
-                                      className={`${
-                                        checked
-                                          ? "bg-blue-400 text-white border-blue-400"
-                                          : "text-gray-400 border-gray-200"
-                                      } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
-                                    >
-                                      {day.charAt(0)}
-                                    </span>
-                                  )}
-                                </Switch>
-                              );
-                            })}
-                          </span>
-                        </div>
-                      </Switch.Group>
-                    </div>
-                  </Disclosure.Panel>
-                </>
-              )}
+                            </span>
+                          </div>
+                        </Switch.Group>
+                      </div>
+                    </Disclosure.Panel>
+                  </>
+                );
+              }}
             </Disclosure>
           </div>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
