@@ -31,7 +31,6 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   const [months, setMonths] = useState<number>(1);
   const [days, setDays] = useState<Days>(DAYS);
   let closeFunction: () => void;
-  let renderOpen: boolean = false;
 
   // useEffect(() => {
   //   if (renderOpen) {
@@ -73,8 +72,8 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
 
   return (
     <Modal open={isOpen} onClose={setIsOpen}>
-      <div className="h-full w-full flex flex-col overflow-y-scroll">
-        <div className="w-full flex justify-between fixed p-4 pr-6">
+      <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
+        <div className="w-full flex justify-between fixed p-4 bg-white">
           <button
             className="text-lg font-md font-normal text-blue-400"
             onClick={handleIsOpen}
@@ -92,6 +91,7 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                 isDone: false,
                 months,
                 weekly: enabledDays,
+                createdAt: new Date().toISOString(),
               });
               setTitle("");
               setIsOpen(false);
@@ -132,7 +132,6 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
             <Disclosure>
               {({ open, close }) => {
                 closeFunction = close;
-                renderOpen = open;
                 if (open) {
                   setTimeout(() => {
                     setIsEveryday(false);

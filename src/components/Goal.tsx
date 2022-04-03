@@ -6,9 +6,10 @@ import Checkbox from "./Checkbox";
 
 interface Props {
   goal: GoalType;
+  disable: boolean;
 }
 
-const Goal: React.FC<Props> = ({ goal }) => {
+const Goal: React.FC<Props> = ({ goal, disable = false }) => {
   const [isDone, setIsDone] = useState(goal.isDone);
 
   function getSpan() {
@@ -37,13 +38,15 @@ const Goal: React.FC<Props> = ({ goal }) => {
         <h3 className="text-md font-medium">{goal.title}</h3>
         <span className="text-xs mt-[2px] text-gray-400">{getSpan()}</span>
       </div>
-      <Checkbox
-        isDone={isDone}
-        setIsDone={async (value) => {
-          await handleDone();
-          return setIsDone(value);
-        }}
-      />
+      {disable && (
+        <Checkbox
+          isDone={isDone}
+          setIsDone={async (value) => {
+            await handleDone();
+            return setIsDone(value);
+          }}
+        />
+      )}
     </div>
   );
 };

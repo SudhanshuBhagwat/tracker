@@ -5,4 +5,5 @@ export interface Goal {
   weekly?: string[];
   months?: number;
   isDone: boolean;
+  createdAt: string;
 }
