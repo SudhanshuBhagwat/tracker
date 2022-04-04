@@ -20,7 +20,7 @@ const Goal: React.FC<Props> = ({ goal, disable = false }) => {
     if (goal.everyday) {
       timeSpan = "Everyday";
     } else if (goal.weekly) {
-      const dates = goal.completed;
+      const dates = goal.completed || [];
       const thisWeekDates = dates.filter((date) => isThisWeek(new Date(date)));
       const finalGoalsDone = thisWeekDates.map((date) => {
         const weekday = format(new Date(date), "eeee");
