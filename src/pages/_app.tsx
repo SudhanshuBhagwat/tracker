@@ -19,6 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
         <title>Habit Tracker</title>
         <meta name="theme-color" content="#F9FAFB" />
+        <link rel="icon" type="image/x-icon" href="/icon-192x192.png" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
       <Header />
