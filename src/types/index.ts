@@ -8,3 +8,13 @@ export interface Goal {
   createdAt: string;
   completed: string[];
 }
+
+export interface Expense {
+  id?: string;
+  title: string;
+  spent: string;
+  months: number;
+  category: number;
+  other?: string;
+  createdAt: string;
+}

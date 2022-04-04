@@ -10,7 +10,7 @@ import { firestore } from "../config/firebase";
 import { format } from "date-fns";
 
 const Home: NextPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [goals, setGoals] = useState<GoalType[]>([]);
   const [today, setToday] = useState<GoalType[]>([]);
   const { addGoal } = useFirestore();

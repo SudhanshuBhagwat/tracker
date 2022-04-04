@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Goal } from "../types";
 import Checkbox from "./Checkbox";
 import Modal from "./Modal";
+import Spinner from "./Spinner";
 
 interface Props {
   isOpen: boolean;
@@ -30,6 +31,7 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   const [times, setTimes] = useState<number>(1);
   const [months, setMonths] = useState<number>(1);
   const [days, setDays] = useState<Days>(DAYS);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   let closeFunction: () => void;
 
   // useEffect(() => {
@@ -82,8 +84,9 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
           </button>
           <h2 className="text-xl font-semibold">Add Goal</h2>
           <button
-            className="text-lg font-md font-semibold text-blue-400"
+            className="text-lg font-md font-semibold text-blue-400 w-11"
             onClick={async () => {
+              setIsSaving(true);
               const enabledDays = Object.keys(days).filter((day) => days[day]);
               await handleSubmit({
                 title,
@@ -96,9 +99,10 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
               });
               setTitle("");
               setIsOpen(false);
+              setIsSaving(false);
             }}
           >
-            Save
+            {isSaving ? <Spinner /> : "Save"}
           </button>
         </div>
         <div className="flex flex-col items-start px-4 space-y-4 mt-14">
