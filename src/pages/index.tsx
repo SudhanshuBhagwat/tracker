@@ -36,7 +36,7 @@ const Home: NextPage = () => {
           };
           if (data.everyday) {
             todaysGoals.push(goal);
-          } else if (goal.weekly.includes(weekday)) {
+          } else if (goal.weekly && goal.weekly.includes(weekday)) {
             todaysGoals.push(goal);
           }
           collectionGoals.push(goal);
