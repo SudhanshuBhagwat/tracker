@@ -78,7 +78,7 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   return (
     <Modal open={isOpen} onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
-        <div className="w-full flex justify-between fixed p-4">
+        <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button
             className="text-lg font-md font-normal text-blue-400"
             onClick={handleIsOpen}
