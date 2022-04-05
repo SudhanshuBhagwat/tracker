@@ -1,7 +1,8 @@
 import { PlusIcon } from "@heroicons/react/outline";
-import { format, isThisMonth, isToday } from "date-fns";
-import { onSnapshot, collection } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { isThisMonth, isToday } from "date-fns";
+import { collection, getDocs } from "firebase/firestore";
+import React, { useState } from "react";
+import useSWR, { mutate } from "swr";
 import AddExpense from "../components/AddExpense";
 import Expense from "../components/Expense";
 import { firestore } from "../config/firebase";
@@ -10,48 +11,43 @@ import { Expense as ExpenseType } from "../types";
 
 interface Props {}
 
-const Money: React.FC<Props> = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [spent, setSpent] = useState<ExpenseType[]>([]);
-  const [today, setToday] = useState<ExpenseType[]>([]);
-  const { addExpense } = useFirestore();
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(firestore, "expenses"),
-      (snapshot) => {
-        const totalExpenses: ExpenseType[] = [];
-        const todaysExpenses: ExpenseType[] = [];
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const expense: ExpenseType = {
-            id: doc.id,
-            title: data.title,
-            spent: data.spent,
-            months: data.months,
-            category: data.category,
-            other: data.other,
-            createdAt: data.createdAt,
-          };
-          if (isToday(new Date(expense.createdAt))) {
-            todaysExpenses.push(expense);
-          }
-          if (isThisMonth(new Date(expense.createdAt))) {
-            totalExpenses.push(expense);
-          }
-        });
-        setSpent(totalExpenses);
-        setToday(todaysExpenses);
+const fetcher = (url: string) =>
+  getDocs(collection(firestore, url)).then(function (snapshot) {
+    const totalExpenses: ExpenseType[] = [];
+    const todaysExpenses: ExpenseType[] = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const expense: ExpenseType = {
+        id: doc.id,
+        title: data.title,
+        spent: data.spent,
+        months: data.months,
+        category: data.category,
+        other: data.other,
+        createdAt: data.createdAt,
+      };
+      if (isToday(new Date(expense.createdAt))) {
+        todaysExpenses.push(expense);
       }
-    );
+      if (isThisMonth(new Date(expense.createdAt))) {
+        totalExpenses.push(expense);
+      }
+    });
 
-    return () => {
-      unsubscribe();
+    return {
+      todaysExpenses,
+      totalExpenses,
     };
-  }, []);
+  });
+
+const Money: React.FC<Props> = () => {
+  const { data } = useSWR("/expenses", fetcher);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { addExpense } = useFirestore();
 
   async function handleSubmit(expense: ExpenseType) {
     await addExpense(expense);
+    mutate("/expenses");
   }
 
   return (
@@ -73,9 +69,9 @@ const Money: React.FC<Props> = () => {
       <div className="w-full h-full mt-4 space-y-4">
         <div className="flex flex-col">
           <h3 className="text-xl font-semibold">Today</h3>
-          {today.length > 0 ? (
+          {data && data.todaysExpenses.length > 0 ? (
             <div className="mt-2 space-y-2">
-              {today.map((expense) => {
+              {data.todaysExpenses.map((expense) => {
                 return <Expense key={expense.id} expense={expense} />;
               })}
             </div>
@@ -87,9 +83,9 @@ const Money: React.FC<Props> = () => {
         </div>
         <div className="">
           <h3 className="text-xl font-semibold">This Month&apos;s Expenses</h3>
-          {spent.length > 0 ? (
+          {data && data.totalExpenses.length > 0 ? (
             <div className="mt-2 space-y-2">
-              {spent.map((expense) => {
+              {data.totalExpenses.map((expense) => {
                 return <Expense key={expense.id} expense={expense} />;
               })}
             </div>

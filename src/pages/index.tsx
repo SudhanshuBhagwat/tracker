@@ -1,57 +1,53 @@
 import { PlusIcon } from "@heroicons/react/outline";
 import type { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddGoal from "../components/AddGoal";
 import Goal from "../components/Goal";
 import type { Goal as GoalType } from "../types";
 import useFirestore from "../hooks/useFirestore";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 import { format } from "date-fns";
+import useSWR, { mutate } from "swr";
+
+const fetcher = (url: string) =>
+  getDocs(collection(firestore, url)).then(function (snapshot) {
+    const collectionGoals: GoalType[] = [];
+    const todaysGoals: GoalType[] = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const weekday = format(new Date(), "eeee");
+      const goal: GoalType = {
+        id: doc.id,
+        title: data.title,
+        everyday: data.everyday,
+        months: data.months,
+        weekly: data.weekly,
+        createdAt: data.createdAt,
+        completed: data.completed,
+      };
+      if (data.everyday) {
+        todaysGoals.push(goal);
+      } else if (goal.weekly && goal.weekly.includes(weekday)) {
+        todaysGoals.push(goal);
+      }
+      collectionGoals.push(goal);
+    });
+
+    return {
+      todaysGoals,
+      collectionGoals,
+    };
+  });
 
 const Home: NextPage = () => {
+  const { data } = useSWR("/habits", fetcher);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [goals, setGoals] = useState<GoalType[]>([]);
-  const [today, setToday] = useState<GoalType[]>([]);
   const { addGoal } = useFirestore();
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(firestore, "habits"),
-      (snapshot) => {
-        const collectionGoals: GoalType[] = [];
-        const todaysGoals: GoalType[] = [];
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const weekday = format(new Date(), "eeee");
-          const goal: GoalType = {
-            id: doc.id,
-            title: data.title,
-            everyday: data.everyday,
-            months: data.months,
-            weekly: data.weekly,
-            createdAt: data.createdAt,
-            completed: data.completed,
-          };
-          if (data.everyday) {
-            todaysGoals.push(goal);
-          } else if (goal.weekly && goal.weekly.includes(weekday)) {
-            todaysGoals.push(goal);
-          }
-          collectionGoals.push(goal);
-        });
-        setGoals(collectionGoals);
-        setToday(todaysGoals);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   async function handleSubmit(data: any) {
     await addGoal(data);
+    mutate("/habits");
   }
 
   return (
@@ -73,9 +69,9 @@ const Home: NextPage = () => {
       <div className="w-full h-full mt-4 space-y-4">
         <div className="flex flex-col">
           <h3 className="text-xl font-semibold">Today</h3>
-          {today.length > 0 ? (
+          {data && data.todaysGoals.length > 0 ? (
             <div className="mt-2 space-y-2">
-              {today.map((goal) => {
+              {data.todaysGoals.map((goal) => {
                 return <Goal key={goal.id} goal={goal} disable={false} />;
               })}
             </div>
@@ -87,9 +83,9 @@ const Home: NextPage = () => {
         </div>
         <div className="">
           <h3 className="text-xl font-semibold">All Goals</h3>
-          {goals.length > 0 ? (
+          {data && data.collectionGoals.length > 0 ? (
             <div className="mt-2 space-y-2">
-              {goals.map((goal) => {
+              {data.collectionGoals.map((goal) => {
                 return <Goal key={goal.id} goal={goal} disable />;
               })}
             </div>
