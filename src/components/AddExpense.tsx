@@ -20,7 +20,7 @@ interface Props {
   handleSubmit: (data: Expense) => void;
 }
 
-const ExpenseIconMap: {
+export const ExpenseIconMap: {
   [key: string]: {
     title: string;
     icon: ReactNode;

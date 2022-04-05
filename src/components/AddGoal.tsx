@@ -34,12 +34,6 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   let closeFunction: () => void;
 
-  // useEffect(() => {
-  //   if (renderOpen) {
-  //     setIsEveryday(false);
-  //   }
-  // }, [renderOpen]);
-
   async function handleIsOpen() {
     setIsOpen(false);
     setTitle("");
@@ -91,7 +85,6 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
               await handleSubmit({
                 title,
                 everyday: isEveryday,
-                isDone: false,
                 months,
                 weekly: enabledDays,
                 createdAt: new Date().toISOString(),

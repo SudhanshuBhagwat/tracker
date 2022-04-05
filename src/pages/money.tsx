@@ -10,25 +10,6 @@ import { Expense as ExpenseType } from "../types";
 
 interface Props {}
 
-const EXPENSES: ExpenseType[] = [
-  {
-    id: "1",
-    title: "Youtube Premium",
-    spent: "179",
-    months: 0,
-    category: 2,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    title: "Mutual Funds",
-    spent: "2000",
-    months: 0,
-    category: 1,
-    createdAt: new Date().toISOString(),
-  },
-];
-
 const Money: React.FC<Props> = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [spent, setSpent] = useState<ExpenseType[]>([]);

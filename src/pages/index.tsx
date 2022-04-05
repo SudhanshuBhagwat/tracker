@@ -26,7 +26,6 @@ const Home: NextPage = () => {
           const weekday = format(new Date(), "eeee");
           const goal: GoalType = {
             id: doc.id,
-            isDone: data.isDone,
             title: data.title,
             everyday: data.everyday,
             months: data.months,
@@ -77,7 +76,7 @@ const Home: NextPage = () => {
           {today.length > 0 ? (
             <div className="mt-2 space-y-2">
               {today.map((goal) => {
-                return <Goal key={goal.id} goal={goal} disable />;
+                return <Goal key={goal.id} goal={goal} disable={false} />;
               })}
             </div>
           ) : (
@@ -91,7 +90,7 @@ const Home: NextPage = () => {
           {goals.length > 0 ? (
             <div className="mt-2 space-y-2">
               {goals.map((goal) => {
-                return <Goal key={goal.id} goal={goal} disable={false} />;
+                return <Goal key={goal.id} goal={goal} disable />;
               })}
             </div>
           ) : (

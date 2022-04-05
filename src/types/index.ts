@@ -4,7 +4,6 @@ export interface Goal {
   everyday?: boolean;
   weekly: string[];
   months?: number;
-  isDone: boolean;
   createdAt: string;
   completed: string[];
 }
