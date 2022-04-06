@@ -15,7 +15,6 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 
 interface Props {
-  isOpen: boolean;
   setIsOpen: (value: boolean) => void;
   handleSubmit: (data: Expense) => void;
 }
@@ -60,7 +59,7 @@ export const ExpenseIconMap: {
   },
 };
 
-const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
+const AddExpense: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
   const [title, setTitle] = useState<string>("");
   const [spent, setSpent] = useState<string>("");
   const [isRepeating, setIsRepeating] = useState<boolean>(false);
@@ -76,7 +75,7 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   }
 
   return (
-    <Modal open={isOpen} onClose={setIsOpen}>
+    <Modal onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
         <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button

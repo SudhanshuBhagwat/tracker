@@ -6,7 +6,6 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 
 interface Props {
-  isOpen: boolean;
   setIsOpen: (value: boolean) => void;
   handleSubmit: (data: Goal) => void;
 }
@@ -25,7 +24,7 @@ const DAYS: Days = {
   Saturday: false,
 };
 
-const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
+const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
   const [title, setTitle] = useState<string>("");
   const [isEveryday, setIsEveryday] = useState<boolean>(false);
   const [times, setTimes] = useState<number>(1);
@@ -67,7 +66,7 @@ const AddGoal: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
   }
 
   return (
-    <Modal open={isOpen} onClose={setIsOpen}>
+    <Modal onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
         <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button

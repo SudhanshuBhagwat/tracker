@@ -1,6 +1,7 @@
 import { PlusIcon } from "@heroicons/react/outline";
 import { isThisMonth, isToday } from "date-fns";
 import { collection, getDocs } from "firebase/firestore";
+import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 import AddExpense from "../components/AddExpense";
@@ -106,11 +107,11 @@ const Money: React.FC<Props> = () => {
           )}
         </div>
       </div>
-      <AddExpense
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        handleSubmit={handleSubmit}
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <AddExpense setIsOpen={setIsOpen} handleSubmit={handleSubmit} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
