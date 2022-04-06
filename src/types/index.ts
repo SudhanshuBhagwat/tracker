@@ -1,9 +1,9 @@
 export interface Goal {
-  id?: string;
+  id: string | null;
   title: string;
   everyday?: boolean;
   weekly: string[];
-  months?: number;
+  months: number;
   createdAt: string;
   completed: string[];
 }

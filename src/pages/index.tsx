@@ -44,10 +44,21 @@ const fetcher = (url: string) =>
 const Home: NextPage = () => {
   const { data } = useSWR("/habits", fetcher);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { addGoal } = useFirestore();
+  const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
+  const [selectedGoal, setSelectedGoal] = useState<GoalType | null>();
+  const { addGoal, updateGoal, removeGoal } = useFirestore();
 
   async function handleSubmit(data: any) {
-    await addGoal(data);
+    if (mode === "ADD") {
+      await addGoal(data);
+    } else {
+      await updateGoal(data);
+    }
+    mutate("/habits");
+  }
+
+  async function handleRemove(id: string) {
+    await removeGoal(id);
     mutate("/habits");
   }
 
@@ -58,6 +69,8 @@ const Home: NextPage = () => {
         <button
           className="flex items-center bg-blue-200 px-2 py-1 rounded-md"
           onClick={() => {
+            setMode("ADD");
+            setSelectedGoal(null);
             setIsOpen((open) => !open);
           }}
         >
@@ -73,7 +86,18 @@ const Home: NextPage = () => {
           {data && data.todaysGoals.length > 0 ? (
             <div className="mt-2 space-y-2">
               {data.todaysGoals.map((goal) => {
-                return <Goal key={goal.id} goal={goal} disable={false} />;
+                return (
+                  <Goal
+                    key={goal.id}
+                    goal={goal}
+                    disable={false}
+                    handleClick={() => {
+                      setSelectedGoal(goal);
+                      setMode("EDIT");
+                      setIsOpen((open) => !open);
+                    }}
+                  />
+                );
               })}
             </div>
           ) : (
@@ -109,7 +133,13 @@ const Home: NextPage = () => {
       </div>
       <AnimatePresence>
         {isOpen && (
-          <AddGoal setIsOpen={setIsOpen} handleSubmit={handleSubmit} />
+          <AddGoal
+            setIsOpen={setIsOpen}
+            handleSubmit={handleSubmit}
+            handleRemove={handleRemove}
+            mode={mode}
+            goal={selectedGoal}
+          />
         )}
       </AnimatePresence>
     </div>

@@ -1,13 +1,16 @@
 import { Disclosure, RadioGroup, Switch } from "@headlessui/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Goal } from "../types";
 import Checkbox from "./Checkbox";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
 
 interface Props {
+  mode: "EDIT" | "ADD" | null | undefined;
+  goal: Goal | null | undefined;
   setIsOpen: (value: boolean) => void;
   handleSubmit: (data: Goal) => void;
+  handleRemove: (id: string) => void;
 }
 
 interface Days {
@@ -24,24 +27,54 @@ const DAYS: Days = {
   Saturday: false,
 };
 
-const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
-  const [title, setTitle] = useState<string>("");
-  const [isEveryday, setIsEveryday] = useState<boolean>(false);
-  const [times, setTimes] = useState<number>(1);
-  const [months, setMonths] = useState<number>(1);
-  const [days, setDays] = useState<Days>(DAYS);
+const initState = {
+  id: null,
+  title: "",
+  isEveryday: false,
+  times: 0,
+  months: 0,
+  days: DAYS,
+  completed: [],
+};
+
+function setInitialState(goal: Goal) {
+  const days = { ...DAYS };
+  goal.weekly.forEach((day) => {
+    days[day] = true;
+  });
+
+  return {
+    id: goal.id,
+    title: goal.title,
+    isEveryday: goal.everyday ?? false,
+    times: goal.weekly.length,
+    days,
+    months: goal.months,
+    completed: goal.completed,
+  };
+}
+
+const AddGoal: React.FC<Props> = ({
+  setIsOpen,
+  handleSubmit,
+  handleRemove,
+  mode,
+  goal,
+}) => {
+  const [state, setState] = useState(goal ? setInitialState(goal) : initState);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   let closeFunction: () => void;
 
   async function handleIsOpen() {
     setIsOpen(false);
-    setTitle("");
-    setIsEveryday(false);
+    setState(initState);
   }
 
   function getWeekString() {
     let weekString = "";
-    const enabledDays = Object.keys(days).filter((day) => days[day]);
+    const enabledDays = Object.keys(state.days).filter(
+      (day) => state.days[day]
+    );
 
     if (
       enabledDays.length === 2 &&
@@ -75,21 +108,26 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
           >
             Close
           </button>
-          <h2 className="text-xl font-semibold">Add Goal</h2>
+          <h2 className="text-xl font-semibold">
+            {mode === "ADD" ? "Add" : "Edit"} Goal
+          </h2>
           <button
             className="text-lg font-md font-semibold text-blue-400 w-11"
             onClick={async () => {
               setIsSaving(true);
-              const enabledDays = Object.keys(days).filter((day) => days[day]);
+              const enabledDays = Object.keys(state.days).filter(
+                (day) => state.days[day]
+              );
               await handleSubmit({
-                title,
-                everyday: isEveryday,
-                months,
+                id: state.id || null,
+                title: state.title,
+                everyday: state.isEveryday,
+                months: state.months,
                 weekly: enabledDays,
                 createdAt: new Date().toISOString(),
-                completed: [],
+                completed: state.completed,
               });
-              setTitle("");
+              setState(initState);
               setIsOpen(false);
               setIsSaving(false);
             }}
@@ -105,8 +143,15 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
             <input
               id="goal-title"
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={state.title}
+              onChange={(e) => {
+                setState((s) => {
+                  return {
+                    ...s,
+                    title: e.target.value,
+                  };
+                });
+              }}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter a title for you goal"
             />
@@ -116,22 +161,32 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
               Everyday
             </label>
             <Checkbox
-              isDone={isEveryday}
+              isDone={state.isEveryday}
               setIsDone={() => {
-                setIsEveryday((value) => {
-                  closeFunction();
-                  return !value;
+                closeFunction();
+                setState((s) => {
+                  return {
+                    ...s,
+                    isEveryday: !s.isEveryday,
+                    days: DAYS,
+                    times: 0,
+                  };
                 });
               }}
             />
           </div>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <Disclosure>
+            <Disclosure defaultOpen={state.times > 0}>
               {({ open, close }) => {
                 closeFunction = close;
                 if (open) {
                   setTimeout(() => {
-                    setIsEveryday(false);
+                    setState((s) => {
+                      return {
+                        ...s,
+                        isEveryday: false,
+                      };
+                    });
                   }, 0);
                 }
                 return (
@@ -142,7 +197,12 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
                         as="div"
                         checked={open}
                         onChange={() => {
-                          setIsEveryday(false);
+                          setState((s) => {
+                            return {
+                              ...s,
+                              isEveryday: false,
+                            };
+                          });
                         }}
                         className={`${
                           open ? "bg-blue-400" : "bg-gray-200"
@@ -159,11 +219,19 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
                     <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
                       <div className="w-full flex flex-col items-start space-y-3">
                         <span className="text-gray-400 text-base text-left">
-                          {times} {times > 1 ? "times" : "time"} per week
+                          {state.times} {state.times > 1 ? "times" : "time"} per
+                          week
                         </span>
                         <RadioGroup
-                          value={times}
-                          onChange={setTimes}
+                          value={state.times}
+                          onChange={(times) => {
+                            setState((s) => {
+                              return {
+                                ...s,
+                                times,
+                              };
+                            });
+                          }}
                           className="w-full"
                         >
                           <RadioGroup.Label className="sr-only">
@@ -208,26 +276,29 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
                           </Switch.Label>
                           <div className="flex justify-center w-full">
                             <span className="relative z-0 inline-flex justify-between w-full">
-                              {Object.keys(days).map((day) => {
+                              {Object.keys(state.days).map((day) => {
                                 return (
                                   <Switch
                                     key={day}
-                                    checked={days[day]}
+                                    checked={state.days[day]}
                                     onChange={() => {
-                                      const isTrue = days[day];
+                                      const isTrue = state.days[day];
                                       const enabledDays = Object.keys(
-                                        days
-                                      ).filter((day) => days[day]);
+                                        state.days
+                                      ).filter((day) => state.days[day]);
 
                                       if (
                                         (!isTrue &&
-                                          enabledDays.length < times) ||
+                                          enabledDays.length < state.times) ||
                                         isTrue
                                       ) {
-                                        setDays((old) => {
+                                        setState((s) => {
                                           return {
-                                            ...old,
-                                            [day]: !days[day],
+                                            ...s,
+                                            days: {
+                                              ...s.days,
+                                              [day]: !s.days[day],
+                                            },
                                           };
                                         });
                                       }
@@ -265,11 +336,18 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
             <div className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
               <div className="w-full flex flex-col items-start space-y-3">
                 <span className="text-gray-400 text-base text-left">
-                  For {months} {months > 1 ? "months" : "month"}
+                  For {state.months} {state.months > 1 ? "months" : "month"}
                 </span>
                 <RadioGroup
-                  value={months}
-                  onChange={setMonths}
+                  value={state.months}
+                  onChange={(months) => {
+                    setState((s) => {
+                      return {
+                        ...s,
+                        months,
+                      };
+                    });
+                  }}
                   className="w-full"
                 >
                   <RadioGroup.Label className="sr-only">
@@ -312,6 +390,24 @@ const AddGoal: React.FC<Props> = ({ setIsOpen, handleSubmit }) => {
               </div>
             </div>
           </div>
+          {mode === "EDIT" && (
+            <div className="w-full">
+              <button
+                onClick={async () => {
+                  setIsSaving(true);
+                  const id = state.id || "";
+                  await handleRemove(id);
+
+                  setState(initState);
+                  setIsOpen(false);
+                  setIsSaving(false);
+                }}
+                className="w-full py-2 bg-red-600 text-white font-semibold rounded-md"
+              >
+                Remove Goal
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </Modal>
