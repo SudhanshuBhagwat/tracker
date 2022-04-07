@@ -7,9 +7,7 @@ import AddExpense from "../components/AddExpense";
 import Expense from "../components/Expense";
 import { firestore } from "../config/firebase";
 import useFirestore from "../hooks/useFirestore";
-import { Expense as ExpenseType } from "../types";
-
-interface Props {}
+import type { Expense as ExpenseType } from "../types";
 
 const fetcher = (url: string) =>
   getDocs(collection(firestore, url)).then(function (snapshot) {
@@ -40,13 +38,24 @@ const fetcher = (url: string) =>
     };
   });
 
-const Money: React.FC<Props> = () => {
+const Money: React.FC = () => {
   const { data } = useSWR("/expenses", fetcher);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { addExpense } = useFirestore();
+  const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<ExpenseType | null>();
+  const { addExpense, updateExpense, removeExpense } = useFirestore();
 
   async function handleSubmit(expense: ExpenseType) {
-    await addExpense(expense);
+    if (mode === "ADD") {
+      await addExpense(expense);
+    } else {
+      await updateExpense(expense);
+    }
+    mutate("/expenses");
+  }
+
+  async function handleRemove(id: string) {
+    await removeExpense(id);
     mutate("/expenses");
   }
 
@@ -57,6 +66,8 @@ const Money: React.FC<Props> = () => {
         <button
           className="flex items-center bg-green-200 px-2 py-1 rounded-md"
           onClick={() => {
+            setMode("ADD");
+            setSelectedExpense(null);
             setIsOpen((open) => !open);
           }}
         >
@@ -72,7 +83,17 @@ const Money: React.FC<Props> = () => {
           {data && data.todaysExpenses.length > 0 ? (
             <div className="mt-2 space-y-2">
               {data.todaysExpenses.map((expense) => {
-                return <Expense key={expense.id} expense={expense} />;
+                return (
+                  <Expense
+                    key={expense.id}
+                    expense={expense}
+                    handleClick={() => {
+                      setSelectedExpense(expense);
+                      setMode("EDIT");
+                      setIsOpen((open) => !open);
+                    }}
+                  />
+                );
               })}
             </div>
           ) : (
@@ -109,7 +130,10 @@ const Money: React.FC<Props> = () => {
       <AddExpense
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        mode={mode}
+        expense={selectedExpense}
         handleSubmit={handleSubmit}
+        handleRemove={handleRemove}
       />
     </div>
   );

@@ -17,7 +17,10 @@ import Spinner from "./Spinner";
 interface Props {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  mode: "ADD" | "EDIT" | null | undefined;
+  expense: Expense | null | undefined;
   handleSubmit: (data: Expense) => void;
+  handleRemove: (id: string) => void;
 }
 
 export const ExpenseIconMap: {
@@ -60,19 +63,47 @@ export const ExpenseIconMap: {
   },
 };
 
-const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
-  const [title, setTitle] = useState<string>("");
-  const [spent, setSpent] = useState<string>("");
-  const [isRepeating, setIsRepeating] = useState<boolean>(false);
-  const [months, setMonths] = useState<number>(1);
-  const [category, setCategory] = useState<number>(0);
-  const [otherSelected, setOtherSelected] = useState<boolean>(false);
-  const [otherTitle, setOtherTitle] = useState<string>("");
+const initialState = {
+  title: "",
+  spent: "",
+  isRepeating: false,
+  months: 0,
+  category: 0,
+  otherSelected: false,
+  otherTitle: "",
+  id: "",
+};
+
+function setInitalState(expense: Expense) {
+  return {
+    title: expense.title,
+    spent: expense.spent,
+    months: expense.months,
+    isRepeating: expense.months > 0 ? true : false,
+    category: expense.category,
+    otherSelected: expense.category === 8 ? true : false,
+    otherTitle: expense.other,
+    id: expense.id,
+  };
+}
+
+const AddExpense: React.FC<Props> = ({
+  isOpen,
+  setIsOpen,
+  mode,
+  expense,
+  handleSubmit,
+  handleRemove,
+}) => {
+  console.log(isOpen);
+  const [state, setState] = useState(
+    expense ? setInitalState(expense) : initialState
+  );
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   async function handleIsOpen() {
     setIsOpen(false);
-    setTitle("");
+    setState(initialState);
   }
 
   return (
@@ -85,28 +116,24 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
           >
             Close
           </button>
-          <h2 className="text-xl font-semibold">Add Expense</h2>
+          <h2 className="text-xl font-semibold">
+            {mode === "ADD" ? "Add" : "Edit"} Expense
+          </h2>
           <button
             className="text-lg font-md font-semibold text-blue-400 w-11"
             onClick={async () => {
               setIsSaving(true);
 
               const expense: Expense = {
-                category,
-                title,
+                category: state.category,
+                title: state.title,
                 createdAt: new Date().toISOString(),
-                months: isRepeating ? months : 0,
-                other: Number(category) === 8 ? otherTitle : "",
-                spent,
+                months: state.isRepeating ? state.months : 0,
+                other: Number(state.category) === 8 ? state.otherTitle : "",
+                spent: state.spent,
               };
               await handleSubmit(expense);
-              setTitle("");
-              setSpent("");
-              setIsRepeating(false);
-              setMonths(1);
-              setCategory(0);
-              setOtherSelected(false);
-              setOtherTitle("");
+              setState(initialState);
               setIsOpen(false);
               setIsSaving(false);
             }}
@@ -122,8 +149,15 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
             <input
               id="expense-title"
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={state.title}
+              onChange={(e) =>
+                setState((s) => {
+                  return {
+                    ...s,
+                    title: e.target.value,
+                  };
+                })
+              }
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter a title for you expense"
             />
@@ -135,8 +169,15 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
             <input
               id="money-spent"
               type="number"
-              value={spent}
-              onChange={(e) => setSpent(e.target.value)}
+              value={state.spent}
+              onChange={(e) =>
+                setState((s) => {
+                  return {
+                    ...s,
+                    spent: e.target.value,
+                  };
+                })
+              }
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter the amount of you expense"
             />
@@ -152,7 +193,12 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                         as="div"
                         checked={open}
                         onChange={(value) => {
-                          setIsRepeating(value);
+                          setState((s) => {
+                            return {
+                              ...s,
+                              isRepeating: value,
+                            };
+                          });
                         }}
                         className={`${
                           open ? "bg-blue-400" : "bg-gray-200"
@@ -169,11 +215,20 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                     <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
                       <div className="w-full flex flex-col items-start space-y-3">
                         <span className="text-gray-400 text-base text-left">
-                          {months === 1 ? "Mothly" : `Every ${months} months`}
+                          {state.months === 1
+                            ? "Mothly"
+                            : `Every ${state.months} months`}
                         </span>
                         <RadioGroup
-                          value={months}
-                          onChange={setMonths}
+                          value={state.months}
+                          onChange={(months) => {
+                            setState((s) => {
+                              return {
+                                ...s,
+                                months,
+                              };
+                            });
+                          }}
                           className="w-full"
                         >
                           <RadioGroup.Label className="sr-only">
@@ -227,8 +282,15 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
             <div className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
               <div className="w-full flex flex-col items-start space-y-3">
                 <RadioGroup
-                  value={category}
-                  onChange={setCategory}
+                  value={state.category}
+                  onChange={(category) => {
+                    setState((s) => {
+                      return {
+                        ...s,
+                        category,
+                      };
+                    });
+                  }}
                   className="w-full"
                 >
                   <RadioGroup.Label className="sr-only">
@@ -252,11 +314,21 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                             {({ checked }) => {
                               if (key === "8" && checked) {
                                 setTimeout(() => {
-                                  setOtherSelected(true);
+                                  setState((s) => {
+                                    return {
+                                      ...s,
+                                      otherSelected: true,
+                                    };
+                                  });
                                 }, 0);
                               } else if (key === "8" && !checked) {
                                 setTimeout(() => {
-                                  setOtherSelected(false);
+                                  setState((s) => {
+                                    return {
+                                      ...s,
+                                      otherSelected: false,
+                                    };
+                                  });
                                 }, 0);
                               }
                               return (
@@ -282,7 +354,7 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                     </span>
                   </div>
                 </RadioGroup>
-                {otherSelected && (
+                {state.otherSelected && (
                   <div className="flex flex-col items-start w-full">
                     <label htmlFor="other-expense-title" className="sr-only">
                       Other Expense Title
@@ -290,8 +362,15 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
                     <input
                       id="other-expense-title"
                       type="text"
-                      value={otherTitle}
-                      onChange={(e) => setOtherTitle(e.target.value)}
+                      value={state.otherTitle}
+                      onChange={(e) => {
+                        setState((s) => {
+                          return {
+                            ...s,
+                            otherTitle: e.target.value,
+                          };
+                        });
+                      }}
                       className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
                       placeholder="Please enter category for you expense"
                     />
@@ -300,6 +379,24 @@ const AddExpense: React.FC<Props> = ({ isOpen, setIsOpen, handleSubmit }) => {
               </div>
             </div>
           </div>
+          {mode === "EDIT" && (
+            <div className="w-full">
+              <button
+                onClick={async () => {
+                  setIsSaving(true);
+                  const id = state.id || "";
+                  await handleRemove(id);
+
+                  setState(initialState);
+                  setIsOpen(false);
+                  setIsSaving(false);
+                }}
+                className="w-full py-2 bg-red-600 text-white font-semibold rounded-md"
+              >
+                Remove Goal
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

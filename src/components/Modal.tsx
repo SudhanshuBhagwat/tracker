@@ -6,8 +6,6 @@ interface Props {
   onClose: (value: boolean) => void;
 }
 
-const ease = [0.36, 0.66, 0.04, 1];
-
 const Modal: React.FC<Props> = ({ isOpen, onClose, children }) => {
   return (
     <Transition show={isOpen} as={Fragment}>

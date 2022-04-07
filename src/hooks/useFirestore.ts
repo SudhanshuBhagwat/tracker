@@ -21,7 +21,6 @@ function useFirestore() {
   async function updateGoal(goal: Goal) {
     const id = goal.id || "";
     try {
-      console.log(`habits/${id}`);
       await updateDoc(doc(firestore, "habits", id), {
         ...goal,
       });
@@ -46,6 +45,25 @@ function useFirestore() {
     }
   }
 
+  async function updateExpense(expense: Expense) {
+    const id = expense.id || "";
+    try {
+      await updateDoc(doc(firestore, "expenses", id), {
+        ...expense,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function removeExpense(id: string) {
+    try {
+      await deleteDoc(doc(firestore, "expense", id));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async function getGoals() {
     try {
       return await getDocs(collection(firestore, "habits"));
@@ -60,6 +78,8 @@ function useFirestore() {
     removeGoal,
     getGoals,
     addExpense,
+    updateExpense,
+    removeExpense,
   };
 }
 
