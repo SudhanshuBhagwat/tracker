@@ -6,6 +6,7 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 
 interface Props {
+  isOpen: boolean;
   mode: "EDIT" | "ADD" | null | undefined;
   goal: Goal | null | undefined;
   setIsOpen: (value: boolean) => void;
@@ -55,6 +56,7 @@ function setInitialState(goal: Goal) {
 }
 
 const AddGoal: React.FC<Props> = ({
+  isOpen,
   setIsOpen,
   handleSubmit,
   handleRemove,
@@ -99,7 +101,7 @@ const AddGoal: React.FC<Props> = ({
   }
 
   return (
-    <Modal onClose={setIsOpen}>
+    <Modal isOpen={isOpen} onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
         <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button

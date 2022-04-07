@@ -9,7 +9,6 @@ import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 import { format } from "date-fns";
 import useSWR, { mutate } from "swr";
-import { AnimatePresence } from "framer-motion";
 
 const fetcher = (url: string) =>
   getDocs(collection(firestore, url)).then(function (snapshot) {
@@ -131,17 +130,14 @@ const Home: NextPage = () => {
           )}
         </div>
       </div>
-      <AnimatePresence>
-        {isOpen && (
-          <AddGoal
-            setIsOpen={setIsOpen}
-            handleSubmit={handleSubmit}
-            handleRemove={handleRemove}
-            mode={mode}
-            goal={selectedGoal}
-          />
-        )}
-      </AnimatePresence>
+      <AddGoal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleSubmit={handleSubmit}
+        handleRemove={handleRemove}
+        mode={mode}
+        goal={selectedGoal}
+      />
     </div>
   );
 };
