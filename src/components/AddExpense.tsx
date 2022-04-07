@@ -75,7 +75,7 @@ const initialState = {
 };
 
 function setInitalState(expense: Expense) {
-  return {
+  const value = {
     title: expense.title,
     spent: expense.spent,
     months: expense.months,
@@ -85,6 +85,9 @@ function setInitalState(expense: Expense) {
     otherTitle: expense.other,
     id: expense.id,
   };
+  console.log(value);
+
+  return value;
 }
 
 const AddExpense: React.FC<Props> = ({
@@ -95,10 +98,11 @@ const AddExpense: React.FC<Props> = ({
   handleSubmit,
   handleRemove,
 }) => {
-  console.log(isOpen);
   const [state, setState] = useState(
     expense ? setInitalState(expense) : initialState
   );
+  console.log(state);
+  const [otherSelected, setOtherSelected] = useState(state.otherSelected);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   async function handleIsOpen() {
@@ -183,7 +187,7 @@ const AddExpense: React.FC<Props> = ({
             />
           </div>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <Disclosure>
+            <Disclosure defaultOpen={state.isRepeating}>
               {({ open }) => {
                 return (
                   <>
@@ -314,21 +318,11 @@ const AddExpense: React.FC<Props> = ({
                             {({ checked }) => {
                               if (key === "8" && checked) {
                                 setTimeout(() => {
-                                  setState((s) => {
-                                    return {
-                                      ...s,
-                                      otherSelected: true,
-                                    };
-                                  });
+                                  setOtherSelected(true);
                                 }, 0);
                               } else if (key === "8" && !checked) {
                                 setTimeout(() => {
-                                  setState((s) => {
-                                    return {
-                                      ...s,
-                                      otherSelected: false,
-                                    };
-                                  });
+                                  setOtherSelected(false);
                                 }, 0);
                               }
                               return (
