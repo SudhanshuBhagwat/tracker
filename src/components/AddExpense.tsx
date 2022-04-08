@@ -9,7 +9,7 @@ import {
   ShoppingBagIcon,
   TicketIcon,
 } from "@heroicons/react/outline";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Expense } from "../types";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
@@ -63,33 +63,6 @@ export const ExpenseIconMap: {
   },
 };
 
-const initialState = {
-  title: "",
-  spent: "",
-  isRepeating: false,
-  months: 0,
-  category: 0,
-  otherSelected: false,
-  otherTitle: "",
-  id: "",
-};
-
-function setInitalState(expense: Expense) {
-  const value = {
-    title: expense.title,
-    spent: expense.spent,
-    months: expense.months,
-    isRepeating: expense.months > 0 ? true : false,
-    category: expense.category,
-    otherSelected: expense.category === 8 ? true : false,
-    otherTitle: expense.other,
-    id: expense.id,
-  };
-  console.log(value);
-
-  return value;
-}
-
 const AddExpense: React.FC<Props> = ({
   isOpen,
   setIsOpen,
@@ -98,16 +71,40 @@ const AddExpense: React.FC<Props> = ({
   handleSubmit,
   handleRemove,
 }) => {
-  const [state, setState] = useState(
-    expense ? setInitalState(expense) : initialState
-  );
-  console.log(state);
-  const [otherSelected, setOtherSelected] = useState(state.otherSelected);
+  const [title, setTitle] = useState<string>("");
+  const [spent, setSpent] = useState<string>("");
+  const [isRepeating, setIsRepeating] = useState<boolean>(false);
+  const [months, setMonths] = useState<number>(0);
+  const [category, setCategory] = useState<number>(0);
+  const [otherSelected, setOtherSelected] = useState<boolean>(false);
+  const [otherTitle, setOtherTitle] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (expense) {
+      setTitle(expense.title);
+      setSpent(expense.spent);
+      setIsRepeating(expense.months > 0);
+      setMonths(expense.months);
+      setCategory(expense.category);
+      setOtherSelected(expense.category === 8);
+      setOtherTitle(expense.other || "");
+    }
+  }, [expense]);
+
+  function clearState() {
+    setTitle("");
+    setSpent("");
+    setIsRepeating(false);
+    setMonths(0);
+    setCategory(0);
+    setOtherSelected(false);
+    setOtherTitle("");
+  }
+
   async function handleIsOpen() {
+    clearState();
     setIsOpen(false);
-    setState(initialState);
   }
 
   return (
@@ -128,16 +125,27 @@ const AddExpense: React.FC<Props> = ({
             onClick={async () => {
               setIsSaving(true);
 
-              const expense: Expense = {
-                category: state.category,
-                title: state.title,
-                createdAt: new Date().toISOString(),
-                months: state.isRepeating ? state.months : 0,
-                other: Number(state.category) === 8 ? state.otherTitle : "",
-                spent: state.spent,
-              };
-              await handleSubmit(expense);
-              setState(initialState);
+              if (mode === "EDIT") {
+                await handleSubmit({
+                  id: expense?.id,
+                  category: category,
+                  title: title,
+                  createdAt: expense?.createdAt || new Date().toISOString(),
+                  months: isRepeating ? months : 0,
+                  other: Number(category) === 8 ? otherTitle : "",
+                  spent: spent,
+                });
+              } else {
+                await handleSubmit({
+                  category: category,
+                  title: title,
+                  createdAt: new Date().toISOString(),
+                  months: isRepeating ? months : 0,
+                  other: Number(category) === 8 ? otherTitle : "",
+                  spent: spent,
+                });
+              }
+              clearState();
               setIsOpen(false);
               setIsSaving(false);
             }}
@@ -153,15 +161,8 @@ const AddExpense: React.FC<Props> = ({
             <input
               id="expense-title"
               type="text"
-              value={state.title}
-              onChange={(e) =>
-                setState((s) => {
-                  return {
-                    ...s,
-                    title: e.target.value,
-                  };
-                })
-              }
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter a title for you expense"
             />
@@ -173,21 +174,14 @@ const AddExpense: React.FC<Props> = ({
             <input
               id="money-spent"
               type="number"
-              value={state.spent}
-              onChange={(e) =>
-                setState((s) => {
-                  return {
-                    ...s,
-                    spent: e.target.value,
-                  };
-                })
-              }
+              value={spent}
+              onChange={(e) => setSpent(e.target.value)}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter the amount of you expense"
             />
           </div>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <Disclosure defaultOpen={state.isRepeating}>
+            <Disclosure defaultOpen={isRepeating}>
               {({ open }) => {
                 return (
                   <>
@@ -196,14 +190,7 @@ const AddExpense: React.FC<Props> = ({
                       <Switch
                         as="div"
                         checked={open}
-                        onChange={(value) => {
-                          setState((s) => {
-                            return {
-                              ...s,
-                              isRepeating: value,
-                            };
-                          });
-                        }}
+                        onChange={setIsRepeating}
                         className={`${
                           open ? "bg-blue-400" : "bg-gray-200"
                         } relative inline-flex items-center h-8 rounded-full w-14 transition`}
@@ -219,20 +206,11 @@ const AddExpense: React.FC<Props> = ({
                     <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
                       <div className="w-full flex flex-col items-start space-y-3">
                         <span className="text-gray-400 text-base text-left">
-                          {state.months === 1
-                            ? "Mothly"
-                            : `Every ${state.months} months`}
+                          {months === 1 ? "Mothly" : `Every ${months} months`}
                         </span>
                         <RadioGroup
-                          value={state.months}
-                          onChange={(months) => {
-                            setState((s) => {
-                              return {
-                                ...s,
-                                months,
-                              };
-                            });
-                          }}
+                          value={months}
+                          onChange={setMonths}
                           className="w-full"
                         >
                           <RadioGroup.Label className="sr-only">
@@ -286,15 +264,8 @@ const AddExpense: React.FC<Props> = ({
             <div className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
               <div className="w-full flex flex-col items-start space-y-3">
                 <RadioGroup
-                  value={state.category}
-                  onChange={(category) => {
-                    setState((s) => {
-                      return {
-                        ...s,
-                        category,
-                      };
-                    });
-                  }}
+                  value={category}
+                  onChange={setCategory}
                   className="w-full"
                 >
                   <RadioGroup.Label className="sr-only">
@@ -356,15 +327,8 @@ const AddExpense: React.FC<Props> = ({
                     <input
                       id="other-expense-title"
                       type="text"
-                      value={state.otherTitle}
-                      onChange={(e) => {
-                        setState((s) => {
-                          return {
-                            ...s,
-                            otherTitle: e.target.value,
-                          };
-                        });
-                      }}
+                      value={otherTitle}
+                      onChange={(e) => setOtherTitle(e.target.value)}
                       className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
                       placeholder="Please enter category for you expense"
                     />
@@ -378,10 +342,10 @@ const AddExpense: React.FC<Props> = ({
               <button
                 onClick={async () => {
                   setIsSaving(true);
-                  const id = state.id || "";
+                  const id = (expense && expense.id) || "";
                   await handleRemove(id);
 
-                  setState(initialState);
+                  clearState();
                   setIsOpen(false);
                   setIsSaving(false);
                 }}

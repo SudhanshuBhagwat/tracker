@@ -58,7 +58,7 @@ function useFirestore() {
 
   async function removeExpense(id: string) {
     try {
-      await deleteDoc(doc(firestore, "expense", id));
+      await deleteDoc(doc(firestore, "expenses", id));
     } catch (err) {
       console.error(err);
     }
