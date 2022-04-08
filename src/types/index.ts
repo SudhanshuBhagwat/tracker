@@ -1,5 +1,5 @@
 export interface Goal {
-  id: string | null;
+  id?: string | null;
   title: string;
   everyday?: boolean;
   weekly: string[];

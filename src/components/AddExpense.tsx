@@ -348,7 +348,7 @@ const AddExpense: React.FC<Props> = ({
                     </span>
                   </div>
                 </RadioGroup>
-                {state.otherSelected && (
+                {otherSelected && (
                   <div className="flex flex-col items-start w-full">
                     <label htmlFor="other-expense-title" className="sr-only">
                       Other Expense Title

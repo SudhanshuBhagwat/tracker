@@ -1,5 +1,5 @@
 import { Disclosure, RadioGroup, Switch } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Goal } from "../types";
 import Checkbox from "./Checkbox";
 import Modal from "./Modal";
@@ -28,31 +28,12 @@ const DAYS: Days = {
   Saturday: false,
 };
 
-const initState = {
-  id: null,
-  title: "",
-  isEveryday: false,
-  times: 0,
-  months: 0,
-  days: DAYS,
-  completed: [],
-};
-
-function setInitialState(goal: Goal) {
-  const days = { ...DAYS };
-  goal.weekly.forEach((day) => {
-    days[day] = true;
+function setInitialDays(days: string[]): Days {
+  const newDays = { ...DAYS };
+  days.forEach((day) => {
+    newDays[day] = true;
   });
-
-  return {
-    id: goal.id,
-    title: goal.title,
-    isEveryday: goal.everyday ?? false,
-    times: goal.weekly.length,
-    days,
-    months: goal.months,
-    completed: goal.completed,
-  };
+  return newDays;
 }
 
 const AddGoal: React.FC<Props> = ({
@@ -63,20 +44,42 @@ const AddGoal: React.FC<Props> = ({
   mode,
   goal,
 }) => {
-  const [state, setState] = useState(goal ? setInitialState(goal) : initState);
+  console.log(goal);
+  const [title, setTitle] = useState<string>("");
+  const [isEveryday, setIsEveryday] = useState<boolean>(false);
+  const [times, setTimes] = useState<number>(0);
+  const [months, setMonths] = useState<number>(0);
+  const [days, setDays] = useState<Days>(DAYS);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   let closeFunction: () => void;
 
-  async function handleIsOpen() {
+  useEffect(() => {
+    if (goal) {
+      setTitle(goal.title);
+      setIsEveryday(Boolean(goal.everyday));
+      setTimes(goal.weekly.length);
+      setDays(setInitialDays(goal.weekly));
+      setMonths(goal.months);
+    } else {
+      clearState();
+    }
+  }, [goal]);
+
+  function clearState() {
+    setTitle("");
+    setIsEveryday(false);
+    setTimes(0);
+    setMonths(0);
+    setDays(DAYS);
+  }
+
+  async function handleClose() {
     setIsOpen(false);
-    setState(initState);
   }
 
   function getWeekString() {
     let weekString = "";
-    const enabledDays = Object.keys(state.days).filter(
-      (day) => state.days[day]
-    );
+    const enabledDays = Object.keys(days).filter((day) => days[day]);
 
     if (
       enabledDays.length === 2 &&
@@ -106,7 +109,7 @@ const AddGoal: React.FC<Props> = ({
         <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button
             className="text-lg font-md font-normal text-blue-400"
-            onClick={handleIsOpen}
+            onClick={handleClose}
           >
             Close
           </button>
@@ -117,19 +120,29 @@ const AddGoal: React.FC<Props> = ({
             className="text-lg font-md font-semibold text-blue-400 w-11"
             onClick={async () => {
               setIsSaving(true);
-              const enabledDays = Object.keys(state.days).filter(
-                (day) => state.days[day]
-              );
-              await handleSubmit({
-                id: state.id || null,
-                title: state.title,
-                everyday: state.isEveryday,
-                months: state.months,
-                weekly: enabledDays,
-                createdAt: new Date().toISOString(),
-                completed: state.completed,
-              });
-              setState(initState);
+              const enabledDays = Object.keys(days).filter((day) => days[day]);
+              if (goal) {
+                console.log("Update");
+                await handleSubmit({
+                  id: goal.id,
+                  title: title,
+                  everyday: isEveryday,
+                  months: months,
+                  weekly: enabledDays,
+                  createdAt: goal.createdAt,
+                  completed: goal.completed,
+                });
+              } else {
+                await handleSubmit({
+                  title: title,
+                  everyday: isEveryday,
+                  months: months,
+                  weekly: enabledDays,
+                  createdAt: new Date().toISOString(),
+                  completed: [],
+                });
+              }
+              clearState();
               setIsOpen(false);
               setIsSaving(false);
             }}
@@ -145,15 +158,8 @@ const AddGoal: React.FC<Props> = ({
             <input
               id="goal-title"
               type="text"
-              value={state.title}
-              onChange={(e) => {
-                setState((s) => {
-                  return {
-                    ...s,
-                    title: e.target.value,
-                  };
-                });
-              }}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter a title for you goal"
             />
@@ -163,32 +169,20 @@ const AddGoal: React.FC<Props> = ({
               Everyday
             </label>
             <Checkbox
-              isDone={state.isEveryday}
-              setIsDone={() => {
+              isDone={isEveryday}
+              setIsDone={(value) => {
                 closeFunction();
-                setState((s) => {
-                  return {
-                    ...s,
-                    isEveryday: !s.isEveryday,
-                    days: DAYS,
-                    times: 0,
-                  };
-                });
+                setIsEveryday(value);
               }}
             />
           </div>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <Disclosure defaultOpen={state.times > 0}>
+            <Disclosure defaultOpen={times > 0}>
               {({ open, close }) => {
                 closeFunction = close;
                 if (open) {
                   setTimeout(() => {
-                    setState((s) => {
-                      return {
-                        ...s,
-                        isEveryday: false,
-                      };
-                    });
+                    setIsEveryday(false);
                   }, 0);
                 }
                 return (
@@ -199,12 +193,7 @@ const AddGoal: React.FC<Props> = ({
                         as="div"
                         checked={open}
                         onChange={() => {
-                          setState((s) => {
-                            return {
-                              ...s,
-                              isEveryday: false,
-                            };
-                          });
+                          setIsEveryday(false);
                         }}
                         className={`${
                           open ? "bg-blue-400" : "bg-gray-200"
@@ -221,18 +210,13 @@ const AddGoal: React.FC<Props> = ({
                     <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
                       <div className="w-full flex flex-col items-start space-y-3">
                         <span className="text-gray-400 text-base text-left">
-                          {state.times} {state.times > 1 ? "times" : "time"} per
-                          week
+                          {times} {times > 1 ? "times" : "time"} per week
                         </span>
                         <RadioGroup
-                          value={state.times}
-                          onChange={(times) => {
-                            setState((s) => {
-                              return {
-                                ...s,
-                                times,
-                              };
-                            });
+                          value={times}
+                          onChange={(t) => {
+                            setIsEveryday(false);
+                            setTimes(t);
                           }}
                           className="w-full"
                         >
@@ -278,29 +262,26 @@ const AddGoal: React.FC<Props> = ({
                           </Switch.Label>
                           <div className="flex justify-center w-full">
                             <span className="relative z-0 inline-flex justify-between w-full">
-                              {Object.keys(state.days).map((day) => {
+                              {Object.keys(days).map((day) => {
                                 return (
                                   <Switch
                                     key={day}
-                                    checked={state.days[day]}
+                                    checked={days[day]}
                                     onChange={() => {
-                                      const isTrue = state.days[day];
+                                      const isTrue = days[day];
                                       const enabledDays = Object.keys(
-                                        state.days
-                                      ).filter((day) => state.days[day]);
+                                        days
+                                      ).filter((day) => days[day]);
 
                                       if (
                                         (!isTrue &&
-                                          enabledDays.length < state.times) ||
+                                          enabledDays.length < times) ||
                                         isTrue
                                       ) {
-                                        setState((s) => {
+                                        setDays((old) => {
                                           return {
-                                            ...s,
-                                            days: {
-                                              ...s.days,
-                                              [day]: !s.days[day],
-                                            },
+                                            ...old,
+                                            [day]: !days[day],
                                           };
                                         });
                                       }
@@ -338,18 +319,11 @@ const AddGoal: React.FC<Props> = ({
             <div className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
               <div className="w-full flex flex-col items-start space-y-3">
                 <span className="text-gray-400 text-base text-left">
-                  For {state.months} {state.months > 1 ? "months" : "month"}
+                  For {months} {months > 1 ? "months" : "month"}
                 </span>
                 <RadioGroup
-                  value={state.months}
-                  onChange={(months) => {
-                    setState((s) => {
-                      return {
-                        ...s,
-                        months,
-                      };
-                    });
-                  }}
+                  value={months}
+                  onChange={setMonths}
                   className="w-full"
                 >
                   <RadioGroup.Label className="sr-only">
@@ -397,10 +371,10 @@ const AddGoal: React.FC<Props> = ({
               <button
                 onClick={async () => {
                   setIsSaving(true);
-                  const id = state.id || "";
+                  const id = (goal && goal.id) || "";
                   await handleRemove(id);
 
-                  setState(initState);
+                  clearState();
                   setIsOpen(false);
                   setIsSaving(false);
                 }}
