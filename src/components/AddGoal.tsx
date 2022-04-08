@@ -1,5 +1,5 @@
 import { Disclosure, RadioGroup, Switch } from "@headlessui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Goal } from "../types";
 import Checkbox from "./Checkbox";
 import Modal from "./Modal";
@@ -44,13 +44,14 @@ const AddGoal: React.FC<Props> = ({
   mode,
   goal,
 }) => {
-  console.log(goal);
+  const titleRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState<string>("");
   const [isEveryday, setIsEveryday] = useState<boolean>(false);
   const [times, setTimes] = useState<number>(0);
   const [months, setMonths] = useState<number>(0);
   const [days, setDays] = useState<Days>(DAYS);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
   let closeFunction: () => void;
 
   useEffect(() => {
@@ -74,6 +75,7 @@ const AddGoal: React.FC<Props> = ({
   }
 
   async function handleClose() {
+    setMessage("");
     setIsOpen(false);
   }
 
@@ -120,9 +122,23 @@ const AddGoal: React.FC<Props> = ({
             className="text-lg font-md font-semibold text-blue-400 w-11"
             onClick={async () => {
               setIsSaving(true);
+
+              if (!titleRef.current?.value) {
+                setMessage("A Title is required to save a Goal");
+                titleRef.current?.focus();
+                setIsSaving(false);
+                return;
+              }
+
+              if (!isEveryday && times === 0) {
+                setMessage("You need to select a schedule for your Goal");
+                setIsSaving(false);
+                return;
+              }
+
               const enabledDays = Object.keys(days).filter((day) => days[day]);
+
               if (goal) {
-                console.log("Update");
                 await handleSubmit({
                   id: goal.id,
                   title: title,
@@ -143,6 +159,7 @@ const AddGoal: React.FC<Props> = ({
                 });
               }
               clearState();
+              setMessage("");
               setIsOpen(false);
               setIsSaving(false);
             }}
@@ -152,14 +169,21 @@ const AddGoal: React.FC<Props> = ({
         </div>
         <div className="flex flex-col items-start px-4 space-y-4 mt-14">
           <div className="flex flex-col items-start w-full">
+            {message.length > 0 && (
+              <span className="text-red-600 font-medium">{message}</span>
+            )}
             <label htmlFor="goal-title" className="text-lg font-medium">
               Title
             </label>
             <input
               id="goal-title"
               type="text"
+              ref={titleRef}
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setMessage("");
+              }}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter a title for you goal"
             />
@@ -172,6 +196,7 @@ const AddGoal: React.FC<Props> = ({
               isDone={isEveryday}
               setIsDone={(value) => {
                 closeFunction();
+                setMessage("");
                 setIsEveryday(value);
               }}
             />
@@ -193,6 +218,7 @@ const AddGoal: React.FC<Props> = ({
                         as="div"
                         checked={open}
                         onChange={() => {
+                          setMessage("");
                           setIsEveryday(false);
                         }}
                         className={`${

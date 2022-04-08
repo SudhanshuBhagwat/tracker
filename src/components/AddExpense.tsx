@@ -9,7 +9,7 @@ import {
   ShoppingBagIcon,
   TicketIcon,
 } from "@heroicons/react/outline";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { Expense } from "../types";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
@@ -71,6 +71,8 @@ const AddExpense: React.FC<Props> = ({
   handleSubmit,
   handleRemove,
 }) => {
+  const titleRef = useRef<HTMLInputElement>(null);
+  const spentRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState<string>("");
   const [spent, setSpent] = useState<string>("");
   const [isRepeating, setIsRepeating] = useState<boolean>(false);
@@ -78,6 +80,7 @@ const AddExpense: React.FC<Props> = ({
   const [category, setCategory] = useState<number>(0);
   const [otherSelected, setOtherSelected] = useState<boolean>(false);
   const [otherTitle, setOtherTitle] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
@@ -104,6 +107,7 @@ const AddExpense: React.FC<Props> = ({
 
   async function handleIsOpen() {
     clearState();
+    setMessage("");
     setIsOpen(false);
   }
 
@@ -124,6 +128,24 @@ const AddExpense: React.FC<Props> = ({
             className="text-lg font-md font-semibold text-blue-400 w-11"
             onClick={async () => {
               setIsSaving(true);
+
+              if (!titleRef.current?.value) {
+                setMessage("Title is required for an expense");
+                titleRef.current?.focus();
+                setIsSaving(false);
+                return;
+              }
+              if (!spentRef.current?.value) {
+                setMessage("Spent amount is required for an expense");
+                spentRef.current?.focus();
+                setIsSaving(false);
+                return;
+              }
+              if (category === 0) {
+                setMessage("Category is required for an expense");
+                setIsSaving(false);
+                return;
+              }
 
               if (mode === "EDIT") {
                 await handleSubmit({
@@ -146,6 +168,7 @@ const AddExpense: React.FC<Props> = ({
                 });
               }
               clearState();
+              setMessage("");
               setIsOpen(false);
               setIsSaving(false);
             }}
@@ -155,14 +178,21 @@ const AddExpense: React.FC<Props> = ({
         </div>
         <div className="flex flex-col items-start px-4 space-y-4 mt-14">
           <div className="flex flex-col items-start w-full">
+            {message.length > 0 && (
+              <span className="text-red-600 font-medium">{message}</span>
+            )}
             <label htmlFor="goal-title" className="text-lg font-medium">
               Title
             </label>
             <input
               id="expense-title"
               type="text"
+              ref={titleRef}
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setMessage("");
+                setTitle(e.target.value);
+              }}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter a title for you expense"
             />
@@ -174,8 +204,12 @@ const AddExpense: React.FC<Props> = ({
             <input
               id="money-spent"
               type="number"
+              ref={spentRef}
               value={spent}
-              onChange={(e) => setSpent(e.target.value)}
+              onChange={(e) => {
+                setMessage("");
+                setSpent(e.target.value);
+              }}
               className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
               placeholder="Please enter the amount of you expense"
             />
@@ -265,7 +299,10 @@ const AddExpense: React.FC<Props> = ({
               <div className="w-full flex flex-col items-start space-y-3">
                 <RadioGroup
                   value={category}
-                  onChange={setCategory}
+                  onChange={(c) => {
+                    setMessage("");
+                    setCategory(c);
+                  }}
                   className="w-full"
                 >
                   <RadioGroup.Label className="sr-only">
