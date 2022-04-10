@@ -1,6 +1,6 @@
 import { PlusIcon } from "@heroicons/react/outline";
 import type { NextPage } from "next";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddGoal from "../components/AddGoal";
 import Goal from "../components/Goal";
 import type { Goal as GoalType } from "../types";
@@ -9,6 +9,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 import { format } from "date-fns";
 import useSWR, { mutate } from "swr";
+import { getAuth } from "firebase/auth";
+import { useRouter } from "next/router";
 
 const fetcher = (url: string) =>
   getDocs(collection(firestore, url)).then(function (snapshot) {
@@ -46,6 +48,7 @@ const Home: NextPage = () => {
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<GoalType | null>();
   const { addGoal, updateGoal, removeGoal } = useFirestore();
+  const router = useRouter();
 
   async function handleSubmit(data: any) {
     if (mode === "ADD") {
@@ -60,6 +63,16 @@ const Home: NextPage = () => {
     await removeGoal(id);
     mutate("/habits");
   }
+
+  useEffect(() => {
+    const unbsubscribe = getAuth().onAuthStateChanged((user) => {
+      if (!user) {
+        router.replace("/auth");
+      }
+    });
+
+    return () => unbsubscribe();
+  }, [router]);
 
   return (
     <div className="h-full p-4">
