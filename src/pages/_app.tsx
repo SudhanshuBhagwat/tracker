@@ -6,6 +6,7 @@ import "../../styles/globals.css";
 import Spinner from "../components/Spinner";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import { auth } from "../config/firebase";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -28,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </Suspense>
       </main>
-      <Footer />
+      {auth.currentUser && <Footer />}
     </div>
   );
 }
