@@ -1,16 +1,20 @@
 import { PlusIcon } from "@heroicons/react/outline";
 import { isThisMonth, isToday } from "date-fns";
-import { collection, getDocs } from "firebase/firestore";
-import React, { useState } from "react";
-import useSWR, { mutate } from "swr";
+import { getAuth, User } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import useSWR from "swr";
 import AddExpense from "../components/AddExpense";
 import Expense from "../components/Expense";
 import { firestore } from "../config/firebase";
 import useFirestore from "../hooks/useFirestore";
 import type { Expense as ExpenseType } from "../types";
 
-const fetcher = (url: string) =>
-  getDocs(collection(firestore, url)).then(function (snapshot) {
+const fetcher = (url: string, uid: string = "") =>
+  getDocs(
+    query(collection(firestore, url), where("createdBy", "==", uid))
+  ).then(function (snapshot) {
     const totalExpenses: ExpenseType[] = [];
     const todaysExpenses: ExpenseType[] = [];
     snapshot.forEach((doc) => {
@@ -39,11 +43,29 @@ const fetcher = (url: string) =>
   });
 
 const Money: React.FC = () => {
-  const { data } = useSWR("/expenses", fetcher);
+  const [user, setUser] = useState<User | null>();
+  const { data, mutate } = useSWR("/expenses", (url) =>
+    fetcher(url, user?.uid)
+  );
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseType | null>();
   const { addExpense, updateExpense, removeExpense } = useFirestore();
+
+  useEffect(() => {
+    const unbsubscribe = getAuth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        setUser(null);
+        router.replace("/auth");
+      } else {
+        setUser(user);
+        await mutate();
+      }
+    });
+
+    return () => unbsubscribe();
+  }, [router, mutate]);
 
   async function handleSubmit(expense: ExpenseType) {
     if (mode === "ADD") {
@@ -51,12 +73,12 @@ const Money: React.FC = () => {
     } else {
       await updateExpense(expense);
     }
-    mutate("/expenses");
+    mutate();
   }
 
   async function handleRemove(id: string) {
     await removeExpense(id);
-    mutate("/expenses");
+    mutate();
   }
 
   return (

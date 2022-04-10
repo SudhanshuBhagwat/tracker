@@ -5,15 +5,17 @@ import AddGoal from "../components/AddGoal";
 import Goal from "../components/Goal";
 import type { Goal as GoalType } from "../types";
 import useFirestore from "../hooks/useFirestore";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 import { format } from "date-fns";
-import useSWR, { mutate } from "swr";
-import { getAuth } from "firebase/auth";
+import useSWR from "swr";
+import { getAuth, User } from "firebase/auth";
 import { useRouter } from "next/router";
 
-const fetcher = (url: string) =>
-  getDocs(collection(firestore, url)).then(function (snapshot) {
+const fetcher = (url: string, uid: string = "") =>
+  getDocs(
+    query(collection(firestore, url), where("createdBy", "==", uid))
+  ).then(function (snapshot) {
     const collectionGoals: GoalType[] = [];
     const todaysGoals: GoalType[] = [];
     snapshot.forEach((doc) => {
@@ -43,7 +45,10 @@ const fetcher = (url: string) =>
   });
 
 const Home: NextPage = () => {
-  const { data } = useSWR("/habits", fetcher);
+  const [user, setUser] = useState<User | null>();
+  const { data, mutate } = useSWR("/habits", (url: string) =>
+    fetcher(url, user?.uid)
+  );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<GoalType | null>();
@@ -56,23 +61,27 @@ const Home: NextPage = () => {
     } else {
       await updateGoal(data);
     }
-    mutate("/habits");
+    mutate();
   }
 
   async function handleRemove(id: string) {
     await removeGoal(id);
-    mutate("/habits");
+    mutate();
   }
 
   useEffect(() => {
-    const unbsubscribe = getAuth().onAuthStateChanged((user) => {
+    const unbsubscribe = getAuth().onAuthStateChanged(async (user) => {
       if (!user) {
+        setUser(null);
         router.replace("/auth");
+      } else {
+        setUser(user);
+        await mutate();
       }
     });
 
     return () => unbsubscribe();
-  }, [router]);
+  }, [router, mutate]);
 
   return (
     <div className="h-full p-4">

@@ -1,6 +1,5 @@
 import { LogoutIcon } from "@heroicons/react/outline";
 import { format } from "date-fns";
-import { getAuth } from "firebase/auth";
 import React from "react";
 import { auth } from "../config/firebase";
 

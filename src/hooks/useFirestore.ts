@@ -1,3 +1,4 @@
+import { User } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -6,13 +7,19 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { useState } from "react";
+import { auth, firestore } from "../config/firebase";
 import { Expense, Goal } from "../types";
 
 function useFirestore() {
+  const [user, setUser] = useState<User | null>(auth.currentUser);
+
   async function addGoal(goal: Goal) {
     try {
-      await addDoc(collection(firestore, "habits"), goal);
+      await addDoc(collection(firestore, "habits"), {
+        ...goal,
+        createdBy: user?.uid,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -39,7 +46,10 @@ function useFirestore() {
 
   async function addExpense(expense: Expense) {
     try {
-      await addDoc(collection(firestore, "expenses"), expense);
+      await addDoc(collection(firestore, "expenses"), {
+        ...expense,
+        createdBy: user?.uid,
+      });
     } catch (err) {
       console.error(err);
     }
