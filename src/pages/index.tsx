@@ -70,13 +70,13 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    const unbsubscribe = getAuth().onAuthStateChanged(async (user) => {
+    const unbsubscribe = getAuth().onAuthStateChanged((user) => {
       if (!user) {
         setUser(null);
         router.replace("/auth");
       } else {
         setUser(user);
-        await mutate();
+        mutate().then(() => {});
       }
     });
 
