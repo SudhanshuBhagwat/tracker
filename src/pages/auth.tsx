@@ -1,4 +1,9 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  getRedirectResult,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+} from "firebase/auth";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Spinner from "../components/Spinner";
@@ -11,14 +16,12 @@ const Auth = () => {
   async function doAuth() {
     try {
       setIsLoading(true);
-      const result = await signInWithPopup(auth, new GoogleAuthProvider());
-      const user = result?.user;
-      if (user) {
+      await signInWithRedirect(auth, new GoogleAuthProvider());
+      const result = await getRedirectResult(auth);
+      if (result?.user) {
         router.push("/");
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
       }
+      setIsLoading(false);
     } catch (err) {
       console.error(err);
       setIsLoading(false);
