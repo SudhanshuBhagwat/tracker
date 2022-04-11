@@ -6,18 +6,25 @@ import Goal from "../components/Goal";
 import type { Goal as GoalType } from "../types";
 import useFirestore from "../hooks/useFirestore";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { firestore, useAuth } from "../config/firebase";
 import { format } from "date-fns";
 import useSWR from "swr";
-import { getAuth, User } from "firebase/auth";
-import { useRouter } from "next/router";
+import Spinner from "../components/Spinner";
 
-const fetcher = (url: string, uid: string = "") =>
-  getDocs(
-    query(collection(firestore, url), where("createdBy", "==", uid))
-  ).then(function (snapshot) {
-    const collectionGoals: GoalType[] = [];
-    const todaysGoals: GoalType[] = [];
+const fetcher = async (
+  url: string,
+  uid: string | undefined
+): Promise<{
+  todaysGoals: GoalType[];
+  collectionGoals: GoalType[];
+}> => {
+  const collectionGoals: GoalType[] = [];
+  const todaysGoals: GoalType[] = [];
+
+  try {
+    const snapshot = await getDocs(
+      query(collection(firestore, url), where("createdBy", "==", uid))
+    );
     snapshot.forEach((doc) => {
       const data = doc.data();
       const weekday = format(new Date(), "eeee");
@@ -37,23 +44,32 @@ const fetcher = (url: string, uid: string = "") =>
       }
       collectionGoals.push(goal);
     });
+  } catch (err) {
+    throw err;
+  }
 
-    return {
-      todaysGoals,
-      collectionGoals,
-    };
-  });
+  return {
+    todaysGoals,
+    collectionGoals,
+  };
+};
 
 const Home: NextPage = () => {
-  const [user, setUser] = useState<User | null>();
-  const { data, mutate } = useSWR("/habits", (url: string) =>
-    fetcher(url, user?.uid)
+  const { currentUser } = useAuth();
+  const { data, mutate, error } = useSWR(
+    currentUser ? "/habits" : null,
+    (url: string) => fetcher(url, currentUser?.uid)
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<GoalType | null>();
   const { addGoal, updateGoal, removeGoal } = useFirestore();
-  const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      mutate();
+    }
+  }, [currentUser, mutate]);
 
   async function handleSubmit(data: any) {
     if (mode === "ADD") {
@@ -69,19 +85,23 @@ const Home: NextPage = () => {
     mutate();
   }
 
-  useEffect(() => {
-    const unbsubscribe = getAuth().onAuthStateChanged((user) => {
-      if (!user) {
-        setUser(null);
-        router.replace("/auth");
-      } else {
-        setUser(user);
-        mutate().then(() => {});
-      }
-    });
+  if (error) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
+          {error}
+        </span>
+      </div>
+    );
+  }
 
-    return () => unbsubscribe();
-  }, [router, mutate]);
+  if (!data) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-4">
@@ -104,7 +124,7 @@ const Home: NextPage = () => {
       <div className="w-full h-full mt-4 space-y-4">
         <div className="flex flex-col">
           <h3 className="text-xl font-semibold">Today</h3>
-          {data && data.todaysGoals.length > 0 ? (
+          {data.todaysGoals.length > 0 ? (
             <div className="mt-2 space-y-2">
               {data.todaysGoals.map((goal) => {
                 return (
@@ -129,7 +149,7 @@ const Home: NextPage = () => {
         </div>
         <div className="">
           <h3 className="text-xl font-semibold">All Goals</h3>
-          {data && data.collectionGoals.length > 0 ? (
+          {data.collectionGoals.length > 0 ? (
             <div className="mt-2 space-y-2">
               {data.collectionGoals.map((goal) => {
                 return <Goal key={goal.id} goal={goal} disable />;

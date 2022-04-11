@@ -7,16 +7,24 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import AddExpense from "../components/AddExpense";
 import Expense from "../components/Expense";
-import { firestore } from "../config/firebase";
+import Spinner from "../components/Spinner";
+import { firestore, useAuth } from "../config/firebase";
 import useFirestore from "../hooks/useFirestore";
 import type { Expense as ExpenseType } from "../types";
 
-const fetcher = (url: string, uid: string = "") =>
-  getDocs(
-    query(collection(firestore, url), where("createdBy", "==", uid))
-  ).then(function (snapshot) {
-    const totalExpenses: ExpenseType[] = [];
-    const todaysExpenses: ExpenseType[] = [];
+const fetcher = async (
+  url: string,
+  uid: string | undefined
+): Promise<{
+  todaysExpenses: ExpenseType[];
+  totalExpenses: ExpenseType[];
+}> => {
+  const totalExpenses: ExpenseType[] = [];
+  const todaysExpenses: ExpenseType[] = [];
+  try {
+    const snapshot = await getDocs(
+      query(collection(firestore, url), where("createdBy", "==", uid))
+    );
     snapshot.forEach((doc) => {
       const data = doc.data();
       const expense: ExpenseType = {
@@ -35,37 +43,32 @@ const fetcher = (url: string, uid: string = "") =>
         totalExpenses.push(expense);
       }
     });
+  } catch (err) {
+    throw err;
+  }
 
-    return {
-      todaysExpenses,
-      totalExpenses,
-    };
-  });
+  return {
+    todaysExpenses,
+    totalExpenses,
+  };
+};
 
 const Money: React.FC = () => {
-  const [user, setUser] = useState<User | null>();
-  const { data, mutate } = useSWR("/expenses", (url) =>
-    fetcher(url, user?.uid)
+  const { currentUser } = useAuth();
+  const { data, error, mutate } = useSWR(
+    currentUser ? "/expenses" : null,
+    (url) => fetcher(url, currentUser?.uid)
   );
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseType | null>();
   const { addExpense, updateExpense, removeExpense } = useFirestore();
 
   useEffect(() => {
-    const unbsubscribe = getAuth().onAuthStateChanged((user) => {
-      if (!user) {
-        setUser(null);
-        router.replace("/auth");
-      } else {
-        setUser(user);
-        mutate().then(() => {});
-      }
-    });
-
-    return () => unbsubscribe();
-  }, [router, mutate]);
+    if (currentUser) {
+      mutate();
+    }
+  }, [currentUser, mutate]);
 
   async function handleSubmit(expense: ExpenseType) {
     if (mode === "ADD") {
@@ -79,6 +82,24 @@ const Money: React.FC = () => {
   async function handleRemove(id: string) {
     await removeExpense(id);
     mutate();
+  }
+
+  if (error) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
+          {error}
+        </span>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
   }
 
   return (

@@ -5,7 +5,8 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-import { getAuth, connectAuthEmulator, Auth } from "firebase/auth";
+import { getAuth, connectAuthEmulator, Auth, User } from "firebase/auth";
+import { useEffect, useState } from "react";
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -31,5 +32,19 @@ if (process.env.NODE_ENV === "development") {
   auth = getAuth(firebaseApp);
 }
 
-export { firestore, auth };
+function useAuth() {
+  const [user, setUser] = useState<User | null>();
+
+  useEffect(() => {
+    return auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+  }, []);
+
+  return {
+    currentUser: user,
+  };
+}
+
+export { firestore, auth, useAuth };
 export default firebaseApp;

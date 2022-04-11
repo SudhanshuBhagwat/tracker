@@ -1,13 +1,18 @@
 import { LogoutIcon } from "@heroicons/react/outline";
 import { format } from "date-fns";
+import { useRouter } from "next/router";
 import React from "react";
-import { auth } from "../config/firebase";
+import { auth, useAuth } from "../config/firebase";
 
 interface Props {}
 
 const Header: React.FC<Props> = () => {
+  const { currentUser } = useAuth();
+  const router = useRouter();
+
   function handleSignout() {
     auth.signOut();
+    router.replace("/auth");
   }
 
   return (
@@ -15,7 +20,7 @@ const Header: React.FC<Props> = () => {
       <h2 className="text-2xl font-bold">
         {format(new Date(), "eeee, LLLL do")}
       </h2>
-      {auth.currentUser && (
+      {currentUser && (
         <button onClick={handleSignout}>
           <LogoutIcon className="w-6 h-6 text-gray-400" />
         </button>
