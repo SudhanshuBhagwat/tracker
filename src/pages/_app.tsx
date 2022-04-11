@@ -1,14 +1,14 @@
 import Head from "next/head";
 import type { AppProps } from "next/app";
-import { Suspense } from "react";
 
 import "../../styles/globals.css";
-import Spinner from "../components/Spinner";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { auth } from "../config/firebase";
+import { useAuth } from "../config/firebase";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { currentUser } = useAuth();
+
   return (
     <div className="flex flex-col h-screen select-none">
       <Head>
@@ -23,13 +23,19 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" type="image/x-icon" href="/icon-192x192.png" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
-      <Header />
-      <main className="flex-1 mt-14 pb-14">
-        <Suspense fallback={<Spinner />}>
+      {currentUser ? (
+        <>
+          <Header />
+          <main className="flex-1 mt-14 pb-14">
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+        </>
+      ) : (
+        <main className="flex-1 mt-14 pb-14">
           <Component {...pageProps} />
-        </Suspense>
-      </main>
-      {auth.currentUser && <Footer />}
+        </main>
+      )}
     </div>
   );
 }

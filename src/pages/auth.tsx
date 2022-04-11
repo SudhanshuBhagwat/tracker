@@ -4,9 +4,9 @@ import {
   signInWithRedirect,
 } from "firebase/auth";
 import { useRouter } from "next/router";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "../components/Spinner";
-import { auth, useAuth } from "../config/firebase";
+import { auth } from "../config/firebase";
 
 const Auth = () => {
   const router = useRouter();
