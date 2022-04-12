@@ -5,7 +5,16 @@ import AddGoal from "../components/AddGoal";
 import Goal from "../components/Goal";
 import type { Goal as GoalType } from "../types";
 import useFirestore from "../hooks/useFirestore";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { firestore, useAuth } from "../config/firebase";
 import { format } from "date-fns";
 import useSWR from "swr";
@@ -80,6 +89,19 @@ const Home: NextPage = () => {
     mutate();
   }
 
+  async function handleDone(isDone: boolean, id: string) {
+    if (isDone) {
+      await updateDoc(doc(firestore, "habits", id), {
+        completed: arrayUnion(format(new Date(), "yyyy/MM/dd")),
+      });
+    } else {
+      await updateDoc(doc(firestore, "habits", id), {
+        completed: arrayRemove(format(new Date(), "yyyy/MM/dd")),
+      });
+    }
+    mutate();
+  }
+
   async function handleRemove(id: string) {
     await removeGoal(id);
     mutate();
@@ -132,6 +154,7 @@ const Home: NextPage = () => {
                     key={goal.id}
                     goal={goal}
                     disable={false}
+                    handleDone={handleDone}
                     handleClick={() => {
                       setSelectedGoal(goal);
                       setMode("EDIT");
@@ -152,7 +175,14 @@ const Home: NextPage = () => {
           {data.collectionGoals.length > 0 ? (
             <div className="mt-2 space-y-2">
               {data.collectionGoals.map((goal) => {
-                return <Goal key={goal.id} goal={goal} disable />;
+                return (
+                  <Goal
+                    key={goal.id}
+                    goal={goal}
+                    handleDone={handleDone}
+                    disable
+                  />
+                );
               })}
             </div>
           ) : (
