@@ -1,6 +1,5 @@
 import { LogoutIcon } from "@heroicons/react/outline";
 import { format } from "date-fns";
-import { User } from "firebase/auth";
 import { useRouter } from "next/router";
 import React from "react";
 import { auth } from "../config/firebase";

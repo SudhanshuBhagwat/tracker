@@ -23,9 +23,19 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" type="image/x-icon" href="/icon-192x192.png" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
-      <main className="flex-1 mt-14 pb-14">
-        <Component {...pageProps} />
-      </main>
+      {currentUser ? (
+        <>
+          <Header />
+          <main className="flex-1 mt-14 pb-14">
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+        </>
+      ) : (
+        <main className="flex-1 mt-14 pb-14">
+          <Component {...pageProps} />
+        </main>
+      )}
     </div>
   );
 }

@@ -10,8 +10,6 @@ import { firestore, useAuth } from "../config/firebase";
 import { format } from "date-fns";
 import useSWR from "swr";
 import Spinner from "../components/Spinner";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 const fetcher = async (
   url: string,
@@ -106,87 +104,83 @@ const Home: NextPage = () => {
   }
 
   return (
-    <>
-      <Header />
-      <div className="h-full p-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Goals</h2>
-          <button
-            className="flex items-center bg-blue-200 px-2 py-1 rounded-md"
-            onClick={() => {
-              setMode("ADD");
-              setSelectedGoal(null);
-              setIsOpen((open) => !open);
-            }}
-          >
-            <span className="mr-1">
-              <PlusIcon className="h-4 w-4" />
-            </span>
-            Add Goal
-          </button>
-        </div>
-        <div className="w-full h-full mt-4 space-y-4">
-          <div className="flex flex-col">
-            <h3 className="text-xl font-semibold">Today</h3>
-            {data.todaysGoals.length > 0 ? (
-              <div className="mt-2 space-y-2">
-                {data.todaysGoals.map((goal) => {
-                  return (
-                    <Goal
-                      key={goal.id}
-                      goal={goal}
-                      disable={false}
-                      handleClick={() => {
-                        setSelectedGoal(goal);
-                        setMode("EDIT");
-                        setIsOpen((open) => !open);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="h-full flex flex-col justify-center items-center space-y-2 py-6">
-                <span>You&apos;re good for today</span>
-              </div>
-            )}
-          </div>
-          <div className="">
-            <h3 className="text-xl font-semibold">All Goals</h3>
-            {data.collectionGoals.length > 0 ? (
-              <div className="mt-2 space-y-2">
-                {data.collectionGoals.map((goal) => {
-                  return <Goal key={goal.id} goal={goal} disable />;
-                })}
-              </div>
-            ) : (
-              <div className="flex flex-col justify-center items-center space-y-2 mt-20">
-                <span>No Goals added</span>
-                <span className="flex items-center">
-                  Press
-                  <button className="flex items-center bg-blue-200 px-2 py-1 rounded-md mx-2">
-                    <span className="mr-1">
-                      <PlusIcon className="h-4 w-4" />
-                    </span>
-                    Add Goal
-                  </button>
-                  to add one
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-        <AddGoal
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          handleSubmit={handleSubmit}
-          handleRemove={handleRemove}
-          mode={mode}
-          goal={selectedGoal}
-        />
+    <div className="h-full p-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold">Goals</h2>
+        <button
+          className="flex items-center bg-blue-200 px-2 py-1 rounded-md"
+          onClick={() => {
+            setMode("ADD");
+            setSelectedGoal(null);
+            setIsOpen((open) => !open);
+          }}
+        >
+          <span className="mr-1">
+            <PlusIcon className="h-4 w-4" />
+          </span>
+          Add Goal
+        </button>
       </div>
-      <Footer />
-    </>
+      <div className="w-full h-full mt-4 space-y-4">
+        <div className="flex flex-col">
+          <h3 className="text-xl font-semibold">Today</h3>
+          {data.todaysGoals.length > 0 ? (
+            <div className="mt-2 space-y-2">
+              {data.todaysGoals.map((goal) => {
+                return (
+                  <Goal
+                    key={goal.id}
+                    goal={goal}
+                    disable={false}
+                    handleClick={() => {
+                      setSelectedGoal(goal);
+                      setMode("EDIT");
+                      setIsOpen((open) => !open);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className="h-full flex flex-col justify-center items-center space-y-2 py-6">
+              <span>You&apos;re good for today</span>
+            </div>
+          )}
+        </div>
+        <div className="">
+          <h3 className="text-xl font-semibold">All Goals</h3>
+          {data.collectionGoals.length > 0 ? (
+            <div className="mt-2 space-y-2">
+              {data.collectionGoals.map((goal) => {
+                return <Goal key={goal.id} goal={goal} disable />;
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col justify-center items-center space-y-2 mt-20">
+              <span>No Goals added</span>
+              <span className="flex items-center">
+                Press
+                <button className="flex items-center bg-blue-200 px-2 py-1 rounded-md mx-2">
+                  <span className="mr-1">
+                    <PlusIcon className="h-4 w-4" />
+                  </span>
+                  Add Goal
+                </button>
+                to add one
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+      <AddGoal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleSubmit={handleSubmit}
+        handleRemove={handleRemove}
+        mode={mode}
+        goal={selectedGoal}
+      />
+    </div>
   );
 };
 
