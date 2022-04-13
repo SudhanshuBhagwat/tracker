@@ -112,11 +112,11 @@ const Profile: React.FC<Props> = () => {
           <div className="space-y-4">
             <div className="flex justify-between">
               <label className="font-medium">Name</label>
-              <span>{currentUser?.displayName}</span>
+              <span className="text-gray-700">{currentUser?.displayName}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">Email</label>
-              <span>{currentUser?.email}</span>
+              <span className="text-gray-700">{currentUser?.email}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -125,7 +125,7 @@ const Profile: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span>{completedHabits}</span>
+              <span className="text-gray-700">{completedHabits}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -134,7 +134,7 @@ const Profile: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span>{totalExpenses} ₹</span>
+              <span className="text-gray-700">{totalExpenses} ₹</span>
             </div>
           </div>
         </div>
