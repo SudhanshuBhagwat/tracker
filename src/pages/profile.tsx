@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, isThisMonth } from "date-fns";
 import { getDocs, query, collection, where } from "firebase/firestore";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -17,7 +17,11 @@ const goalsfetcher = async (url: string, id: string | undefined) => {
 
     snapshots.forEach((snapshot) => {
       const data = snapshot.data();
-      totalGoalsCompleted += data.completed.length;
+      data.completed.forEach((date: string) => {
+        if (isThisMonth(new Date(date))) {
+          totalGoalsCompleted += 1;
+        }
+      });
     });
   } catch (err) {
     throw err;
@@ -35,7 +39,9 @@ const expensesFetcher = async (url: string, id: string | undefined) => {
 
     snapshots.forEach((snapshot) => {
       const data = snapshot.data();
-      totalExpenses += Number(data.spent);
+      if (isThisMonth(new Date(data.createdAt))) {
+        totalExpenses += Number(data.spent);
+      }
     });
   } catch (err) {
     throw err;
@@ -78,7 +84,7 @@ const Profile: React.FC<Props> = () => {
     );
   }
 
-  if (!totalExpenses || !completedHabits) {
+  if (totalExpenses === undefined || completedHabits === undefined) {
     return (
       <div className="h-full flex justify-center items-center">
         <Spinner />
@@ -113,7 +119,12 @@ const Profile: React.FC<Props> = () => {
               <span>{currentUser?.email}</span>
             </div>
             <div className="flex justify-between">
-              <label className="font-medium">Total completed Goals</label>
+              <label className="font-medium">
+                Total completed Goals{" "}
+                <span className="text-gray-400">
+                  ({format(new Date(), "LLLL")})
+                </span>
+              </label>
               <span>{completedHabits}</span>
             </div>
             <div className="flex justify-between">
