@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { firestore, useAuth } from "../config/firebase";
 import { format } from "date-fns";
-import useSWR from "swr";
+import useSWR, { mutate as gMutate } from "swr";
 import Spinner from "../components/Spinner";
 
 const fetcher = async (
@@ -100,11 +100,13 @@ const Home: NextPage = () => {
       });
     }
     mutate();
+    gMutate("/completedHabits");
   }
 
   async function handleRemove(id: string) {
     await removeGoal(id);
     mutate();
+    gMutate("/completedHabits");
   }
 
   if (error) {

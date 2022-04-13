@@ -2,7 +2,7 @@ import { PlusIcon } from "@heroicons/react/outline";
 import { isThisMonth, isToday } from "date-fns";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate as gMutate } from "swr";
 import AddExpense from "../components/AddExpense";
 import Expense from "../components/Expense";
 import Spinner from "../components/Spinner";
@@ -75,11 +75,13 @@ const Money: React.FC = () => {
       await updateExpense(expense);
     }
     mutate();
+    gMutate("/totalExpenses");
   }
 
   async function handleRemove(id: string) {
     await removeExpense(id);
     mutate();
+    gMutate("/totalExpenses");
   }
 
   if (error) {

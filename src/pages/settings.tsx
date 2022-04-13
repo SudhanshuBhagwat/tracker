@@ -11,7 +11,7 @@ const goalsfetcher = async (url: string, id: string | undefined) => {
 
   try {
     const snapshots = await getDocs(
-      query(collection(firestore, url), where("createdBy", "==", id))
+      query(collection(firestore, "/habits"), where("createdBy", "==", id))
     );
 
     snapshots.forEach((snapshot) => {
@@ -29,7 +29,7 @@ const expensesFetcher = async (url: string, id: string | undefined) => {
 
   try {
     const snapshots = await getDocs(
-      query(collection(firestore, url), where("createdBy", "==", id))
+      query(collection(firestore, "/expenses"), where("createdBy", "==", id))
     );
 
     snapshots.forEach((snapshot) => {
@@ -46,12 +46,20 @@ interface Props {}
 
 const Settings: React.FC<Props> = () => {
   const { currentUser } = useAuth();
-  // const { data, error } = useSWR(currentUser ? "/expenses" : null, (url) =>
-  //   goalsfetcher(url, currentUser?.uid)
-  // );
-  // const { data, error } = useSWR(currentUser ? "/habits" : null, (url) =>
-  //   goalsfetcher(url, currentUser?.uid)
-  // );
+  const { data: totalExpenses, error: expenseError } = useSWR(
+    currentUser ? "/totalExpenses" : null,
+    (url) => expensesFetcher(url, currentUser?.uid),
+    {
+      suspense: true,
+    }
+  );
+  const { data: completedHabits, error: habitsError } = useSWR(
+    currentUser ? "/completedHabits" : null,
+    (url) => goalsfetcher(url, currentUser?.uid),
+    {
+      suspense: true,
+    }
+  );
   const router = useRouter();
 
   function handleSignout() {
@@ -59,23 +67,15 @@ const Settings: React.FC<Props> = () => {
     auth.signOut();
   }
 
-  // if (error) {
-  //   return (
-  //     <div className="h-full flex justify-center items-center">
-  //       <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
-  //         {error}
-  //       </span>
-  //     </div>
-  //   );
-  // }
-
-  // if (!goalsCompleted) {
-  //   return (
-  //     <div className="h-full flex justify-center items-center">
-  //       <Spinner />
-  //     </div>
-  //   );
-  // }
+  if (expenseError || habitsError) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
+          {expenseError || habitsError}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-4">
@@ -93,7 +93,7 @@ const Settings: React.FC<Props> = () => {
             </div>
             <div className="flex justify-between">
               <label className="font-medium">Total completed Goals</label>
-              <span>{0}</span>
+              <span>{completedHabits}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -102,7 +102,7 @@ const Settings: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span>30,000 ₹</span>
+              <span>{totalExpenses} ₹</span>
             </div>
           </div>
         </div>
