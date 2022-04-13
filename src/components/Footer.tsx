@@ -1,4 +1,9 @@
-import { SparklesIcon, CashIcon, CogIcon } from "@heroicons/react/outline";
+import {
+  SparklesIcon,
+  CashIcon,
+  CogIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -32,10 +37,10 @@ const Footer: React.FC<Props> = () => {
             </Link>
           </li>
           <li>
-            <Link passHref={true} href="/settings">
-              <CogIcon
+            <Link passHref={true} href="/profile">
+              <UserIcon
                 className={`w-6 h-6 cursor-pointer ${
-                  router.pathname === "/settings"
+                  router.pathname === "/profile"
                     ? "text-blue-400"
                     : "text-gray-400"
                 }`}

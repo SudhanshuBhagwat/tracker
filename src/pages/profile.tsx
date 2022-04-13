@@ -44,7 +44,7 @@ const expensesFetcher = async (url: string, id: string | undefined) => {
 
 interface Props {}
 
-const Settings: React.FC<Props> = () => {
+const Profile: React.FC<Props> = () => {
   const { currentUser } = useAuth();
   const { data: totalExpenses, error: expenseError } = useSWR(
     currentUser ? "/totalExpenses" : null,
@@ -81,7 +81,7 @@ const Settings: React.FC<Props> = () => {
     <div className="h-full p-4">
       <div className="h-full flex flex-col justify-between">
         <div className="flex flex-col">
-          <h2 className="text-2xl font-semibold mb-4">Settings</h2>
+          <h2 className="text-2xl font-semibold mb-4">Profile</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
               <label className="font-medium">Name</label>
@@ -117,4 +117,4 @@ const Settings: React.FC<Props> = () => {
   );
 };
 
-export default Settings;
+export default Profile;
