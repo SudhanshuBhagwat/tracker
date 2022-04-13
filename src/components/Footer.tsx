@@ -1,9 +1,4 @@
-import {
-  SparklesIcon,
-  CashIcon,
-  CogIcon,
-  UserIcon,
-} from "@heroicons/react/outline";
+import { SparklesIcon, CashIcon, UserIcon } from "@heroicons/react/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
