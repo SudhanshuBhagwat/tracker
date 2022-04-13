@@ -77,6 +77,14 @@ const Profile: React.FC<Props> = () => {
     );
   }
 
+  if (!totalExpenses || !completedHabits) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full p-4">
       <div className="h-full flex flex-col justify-between">
