@@ -3,7 +3,7 @@
     "background_color": "#F9FAFB",
     "display": "standalone",
     "scope": "/",
-    "start_url": "/",
+    "start_url": "/auth",
     "name": "Habit Tracker",
     "short_name": "Tracker",
     "description": "A minimal habit tracker with multiple tracking options",
