@@ -120,13 +120,11 @@ const Profile: React.FC<Props> = () => {
           <div className="space-y-4">
             <div className="flex justify-between">
               <label className="font-medium">Name</label>
-              <span className="text-gray-700">{"Sudhanshu Bhagwat"}</span>
+              <span className="text-gray-700">{currentUser?.displayName}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">Email</label>
-              <span className="text-gray-700">
-                {"sudhanshubhagwat3@gmail.com"}
-              </span>
+              <span className="text-gray-700">{currentUser?.email}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
