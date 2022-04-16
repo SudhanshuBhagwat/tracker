@@ -9,9 +9,6 @@ import { auth, firestore, useAuth } from "../config/firebase";
 
 const goalsfetcher = async (url: string, id: string | undefined) => {
   let totalGoalsCompleted = 0;
-  if (!id || id === undefined) {
-    return totalGoalsCompleted;
-  }
 
   try {
     const snapshots = await getDocs(
@@ -35,9 +32,6 @@ const goalsfetcher = async (url: string, id: string | undefined) => {
 
 const expensesFetcher = async (url: string, id: string | undefined) => {
   let totalExpenses = 0;
-  if (!id || id === undefined) {
-    return totalExpenses;
-  }
 
   try {
     const snapshots = await getDocs(
@@ -61,27 +55,13 @@ interface Props {}
 
 const Profile: React.FC<Props> = () => {
   const { currentUser, fetchingUser } = useAuth();
-  const {
-    data: totalExpenses,
-    error: expenseError,
-    mutate: expenseMutate,
-  } = useSWR(
+  const { data: totalExpenses, error: expenseError } = useSWR(
     currentUser ? "/totalExpenses" : null,
-    (url) => expensesFetcher(url, currentUser?.uid),
-    {
-      suspense: true,
-    }
+    (url) => expensesFetcher(url, currentUser?.uid)
   );
-  const {
-    data: completedHabits,
-    error: habitsError,
-    mutate: habitsMutate,
-  } = useSWR(
+  const { data: completedHabits, error: habitsError } = useSWR(
     currentUser ? "/completedHabits" : null,
-    (url) => goalsfetcher(url, currentUser?.uid),
-    {
-      suspense: true,
-    }
+    (url) => goalsfetcher(url, currentUser?.uid)
   );
   const router = useRouter();
 
@@ -89,7 +69,7 @@ const Profile: React.FC<Props> = () => {
     if (!fetchingUser && !currentUser) {
       router.replace("/auth");
     }
-  }, [currentUser, fetchingUser, expenseMutate, habitsMutate, router]);
+  }, [currentUser, fetchingUser, router]);
 
   function handleSignout() {
     router.replace("/auth");
