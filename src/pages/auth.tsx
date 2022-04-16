@@ -16,7 +16,14 @@ const Auth = () => {
   useEffect(() => {
     Notification.requestPermission().then((result) => {
       if (result === "granted") {
-        randomNotification();
+        navigator.serviceWorker.ready.then(function (registration) {
+          registration.showNotification("Vibration Sample", {
+            body: "Buzz! Buzz!",
+            icon: "../images/touch/chrome-touch-icon-192x192.png",
+            vibrate: [200, 100, 200, 100, 200, 100, 200],
+            tag: "vibration-sample",
+          });
+        });
       }
     });
   }, []);
@@ -51,10 +58,14 @@ const Auth = () => {
   }
 
   function randomNotification() {
-    const options = {
-      body: "Test",
-    };
-    new Notification("Test TItle", options);
+    navigator.serviceWorker.ready.then(function (registration) {
+      registration.showNotification("Vibration Sample", {
+        body: "Buzz! Buzz!",
+        icon: "../images/touch/chrome-touch-icon-192x192.png",
+        vibrate: [200, 100, 200, 100, 200, 100, 200],
+        tag: "vibration-sample",
+      });
+    });
   }
 
   return (
