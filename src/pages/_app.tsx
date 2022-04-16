@@ -7,7 +7,7 @@ import Header from "../components/Header";
 import { useAuth } from "../config/firebase";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const { currentUser } = useAuth();
+  const { currentUser, fetchingUser } = useAuth();
 
   return (
     <div className="flex flex-col h-screen select-none">
@@ -23,7 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" type="image/x-icon" href="/icon-192x192.png" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
-      {currentUser ? (
+      {!fetchingUser && currentUser ? (
         <>
           <Header />
           <main className="flex-1 mt-14 pb-14">
@@ -31,11 +31,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           </main>
           <Footer />
         </>
-      ) : (
+      ) : !fetchingUser && !currentUser ? (
         <main className="flex-1 mt-14 pb-14">
           <Component {...pageProps} />
         </main>
-      )}
+      ) : null}
     </div>
   );
 }

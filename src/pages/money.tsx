@@ -1,6 +1,7 @@
 import { PlusIcon } from "@heroicons/react/outline";
 import { isThisMonth, isToday } from "date-fns";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import useSWR, { mutate as gMutate } from "swr";
 import AddExpense from "../components/AddExpense";
@@ -52,7 +53,8 @@ const fetcher = async (
 };
 
 const Money: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, fetchingUser } = useAuth();
+  const router = useRouter();
   const { data, error, mutate } = useSWR(
     currentUser ? "/expenses" : null,
     (url) => fetcher(url, currentUser?.uid)
@@ -63,10 +65,12 @@ const Money: React.FC = () => {
   const { addExpense, updateExpense, removeExpense } = useFirestore();
 
   useEffect(() => {
-    if (currentUser) {
+    if (!fetchingUser && !currentUser) {
+      router.replace("/auth");
+    } else {
       mutate();
     }
-  }, [currentUser, mutate]);
+  }, [currentUser, fetchingUser, mutate, router]);
 
   async function handleSubmit(expense: ExpenseType) {
     if (mode === "ADD") {

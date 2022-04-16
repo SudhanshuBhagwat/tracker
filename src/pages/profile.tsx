@@ -2,7 +2,7 @@ import { format, isThisMonth } from "date-fns";
 import { getDocs, query, collection, where } from "firebase/firestore";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import useSWR from "swr";
 import Spinner from "../components/Spinner";
 import { auth, firestore, useAuth } from "../config/firebase";
@@ -52,15 +52,23 @@ const expensesFetcher = async (url: string, id: string | undefined) => {
 interface Props {}
 
 const Profile: React.FC<Props> = () => {
-  const { currentUser } = useAuth();
-  const { data: totalExpenses, error: expenseError } = useSWR(
+  const { currentUser, fetchingUser } = useAuth();
+  const {
+    data: totalExpenses,
+    error: expenseError,
+    mutate: expenseMutate,
+  } = useSWR(
     currentUser ? "/totalExpenses" : null,
     (url) => expensesFetcher(url, currentUser?.uid),
     {
       suspense: true,
     }
   );
-  const { data: completedHabits, error: habitsError } = useSWR(
+  const {
+    data: completedHabits,
+    error: habitsError,
+    mutate: habitsMutate,
+  } = useSWR(
     currentUser ? "/completedHabits" : null,
     (url) => goalsfetcher(url, currentUser?.uid),
     {
@@ -68,6 +76,15 @@ const Profile: React.FC<Props> = () => {
     }
   );
   const router = useRouter();
+
+  useEffect(() => {
+    if (!fetchingUser && !currentUser) {
+      router.replace("/auth");
+    } else {
+      expenseMutate();
+      habitsMutate();
+    }
+  }, [currentUser, fetchingUser, expenseMutate, habitsMutate, router]);
 
   function handleSignout() {
     router.replace("/auth");

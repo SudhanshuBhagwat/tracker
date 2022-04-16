@@ -36,15 +36,18 @@ if (process.env.NODE_ENV === "development") {
 
 function useAuth() {
   const [user, setUser] = useState<User | null>();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     return auth.onAuthStateChanged((user) => {
       setUser(user);
+      setIsLoading(false);
     });
   }, []);
 
   return {
     currentUser: user,
+    fetchingUser: isLoading,
   };
 }
 

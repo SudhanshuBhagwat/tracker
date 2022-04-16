@@ -19,6 +19,7 @@ import { firestore, useAuth } from "../config/firebase";
 import { format } from "date-fns";
 import useSWR, { mutate as gMutate } from "swr";
 import Spinner from "../components/Spinner";
+import { useRouter } from "next/router";
 
 const fetcher = async (
   url: string,
@@ -64,7 +65,8 @@ const fetcher = async (
 };
 
 const Home: NextPage = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, fetchingUser } = useAuth();
+  const router = useRouter();
   const { data, mutate, error } = useSWR(
     currentUser ? "/habits" : null,
     (url: string) => fetcher(url, currentUser?.uid)
@@ -75,10 +77,12 @@ const Home: NextPage = () => {
   const { addGoal, updateGoal, removeGoal } = useFirestore();
 
   useEffect(() => {
-    if (currentUser) {
+    if (!fetchingUser && !currentUser) {
+      router.replace("/auth");
+    } else {
       mutate();
     }
-  }, [currentUser, mutate]);
+  }, [currentUser, fetchingUser, mutate, router]);
 
   async function handleSubmit(data: any) {
     if (mode === "ADD") {
@@ -107,6 +111,10 @@ const Home: NextPage = () => {
     await removeGoal(id);
     mutate();
     gMutate("/completedHabits");
+  }
+
+  if (fetchingUser && !currentUser) {
+    return null;
   }
 
   if (error) {
