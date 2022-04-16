@@ -53,61 +53,61 @@ interface Props {}
 
 const Profile: React.FC<Props> = () => {
   const { currentUser, fetchingUser } = useAuth();
-  const {
-    data: totalExpenses,
-    error: expenseError,
-    mutate: expenseMutate,
-  } = useSWR(
-    currentUser ? "/totalExpenses" : null,
-    (url) => expensesFetcher(url, currentUser?.uid),
-    {
-      suspense: true,
-    }
-  );
-  const {
-    data: completedHabits,
-    error: habitsError,
-    mutate: habitsMutate,
-  } = useSWR(
-    currentUser ? "/completedHabits" : null,
-    (url) => goalsfetcher(url, currentUser?.uid),
-    {
-      suspense: true,
-    }
-  );
+  // const {
+  //   data: totalExpenses,
+  //   error: expenseError,
+  //   mutate: expenseMutate,
+  // } = useSWR(
+  //   currentUser ? "/totalExpenses" : null,
+  //   (url) => expensesFetcher(url, currentUser?.uid),
+  //   {
+  //     suspense: true,
+  //   }
+  // );
+  // const {
+  //   data: completedHabits,
+  //   error: habitsError,
+  //   mutate: habitsMutate,
+  // } = useSWR(
+  //   currentUser ? "/completedHabits" : null,
+  //   (url) => goalsfetcher(url, currentUser?.uid),
+  //   {
+  //     suspense: true,
+  //   }
+  // );
   const router = useRouter();
 
   useEffect(() => {
     if (!fetchingUser && !currentUser) {
       router.replace("/auth");
     } else {
-      expenseMutate();
-      habitsMutate();
+      // expenseMutate();
+      // habitsMutate();
     }
-  }, [currentUser, fetchingUser, expenseMutate, habitsMutate, router]);
+  }, [currentUser, fetchingUser, router]);
 
   function handleSignout() {
     router.replace("/auth");
     auth.signOut();
   }
 
-  if (expenseError || habitsError) {
-    return (
-      <div className="h-full flex justify-center items-center">
-        <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
-          An unexpected error occurred
-        </span>
-      </div>
-    );
-  }
+  // if (expenseError || habitsError) {
+  //   return (
+  //     <div className="h-full flex justify-center items-center">
+  //       <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
+  //         An unexpected error occurred
+  //       </span>
+  //     </div>
+  //   );
+  // }
 
-  if (totalExpenses === undefined || completedHabits === undefined) {
-    return (
-      <div className="h-full flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-  }
+  // if (totalExpenses === undefined || completedHabits === undefined) {
+  //   return (
+  //     <div className="h-full flex justify-center items-center">
+  //       <Spinner />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="h-full p-4">
@@ -120,11 +120,13 @@ const Profile: React.FC<Props> = () => {
           <div className="space-y-4">
             <div className="flex justify-between">
               <label className="font-medium">Name</label>
-              <span className="text-gray-700">{currentUser?.displayName}</span>
+              <span className="text-gray-700">{"Sudhanshu Bhagwat"}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">Email</label>
-              <span className="text-gray-700">{currentUser?.email}</span>
+              <span className="text-gray-700">
+                {"sudhanshubhagwat3@gmail.com"}
+              </span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -133,7 +135,7 @@ const Profile: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span className="text-gray-700">{completedHabits}</span>
+              <span className="text-gray-700">{0}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -142,7 +144,7 @@ const Profile: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span className="text-gray-700">{totalExpenses} ₹</span>
+              <span className="text-gray-700">{0} ₹</span>
             </div>
           </div>
         </div>
