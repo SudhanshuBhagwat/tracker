@@ -109,7 +109,13 @@ const Profile: React.FC<Props> = () => {
                 className="rounded-full"
               />
             ) : (
-              <div className="w-24 h-24 bg-pink-400 rounded-full" />
+              <Image
+                src={`https://avatars.dicebear.com/api/initials/${currentUser?.displayName}.svg`}
+                alt={"Profile Photo"}
+                height={96}
+                width={96}
+                className="rounded-full"
+              />
             )}
           </div>
           <div className="space-y-4">
