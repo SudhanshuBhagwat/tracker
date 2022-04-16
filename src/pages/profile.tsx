@@ -115,7 +115,17 @@ const Profile: React.FC<Props> = () => {
         <div className="flex flex-col">
           <h2 className="text-2xl font-semibold mb-4">Profile</h2>
           <div className="flex justify-center pb-6">
-            <div className="w-16 h-16 bg-pink-400 rounded-full" />
+            {currentUser?.photoURL ? (
+              <Image
+                src={currentUser?.photoURL}
+                alt={"Profile Photo"}
+                height={96}
+                width={96}
+                className="rounded-full"
+              />
+            ) : (
+              <div className="w-24 h-24 bg-pink-400 rounded-full" />
+            )}
           </div>
           <div className="space-y-4">
             <div className="flex justify-between">
