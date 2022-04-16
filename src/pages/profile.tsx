@@ -128,7 +128,7 @@ const Profile: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span className="text-gray-700">{0}</span>
+              <span className="text-gray-700">{completedHabits}</span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -137,7 +137,7 @@ const Profile: React.FC<Props> = () => {
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span className="text-gray-700">{0} ₹</span>
+              <span className="text-gray-700">{totalExpenses} ₹</span>
             </div>
           </div>
         </div>
