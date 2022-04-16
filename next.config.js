@@ -5,7 +5,7 @@ module.exports = withPWA({
   pwa: {
     dest: "public",
     runtimeCaching,
-    buildExcludes: [/middleware-manifest.json$/],
+    buildExcludes: [/middleware-build-manifest.json$/],
   },
   images: {
     domains: ["lh3.googleusercontent.com", "avatars.dicebear.com"],
