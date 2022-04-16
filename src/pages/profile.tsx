@@ -28,6 +28,7 @@ const goalsfetcher = async (url: string, id: string | undefined) => {
     });
   } catch (err) {
     console.error(err);
+    return totalGoalsCompleted;
   }
   return totalGoalsCompleted;
 };
@@ -51,6 +52,7 @@ const expensesFetcher = async (url: string, id: string | undefined) => {
     });
   } catch (err) {
     console.error(err);
+    return totalExpenses;
   }
   return totalExpenses;
 };
