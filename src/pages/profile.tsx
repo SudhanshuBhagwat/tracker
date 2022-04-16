@@ -95,7 +95,7 @@ const Profile: React.FC<Props> = () => {
     return (
       <div className="h-full flex justify-center items-center">
         <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
-          {expenseError || habitsError}
+          An unexpected error occurred
         </span>
       </div>
     );
