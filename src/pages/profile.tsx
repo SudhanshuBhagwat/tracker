@@ -53,28 +53,28 @@ interface Props {}
 
 const Profile: React.FC<Props> = () => {
   const { currentUser, fetchingUser } = useAuth();
-  // const {
-  //   data: totalExpenses,
-  //   error: expenseError,
-  //   mutate: expenseMutate,
-  // } = useSWR(
-  //   currentUser ? "/totalExpenses" : null,
-  //   (url) => expensesFetcher(url, currentUser?.uid),
-  //   {
-  //     suspense: true,
-  //   }
-  // );
-  // const {
-  //   data: completedHabits,
-  //   error: habitsError,
-  //   mutate: habitsMutate,
-  // } = useSWR(
-  //   currentUser ? "/completedHabits" : null,
-  //   (url) => goalsfetcher(url, currentUser?.uid),
-  //   {
-  //     suspense: true,
-  //   }
-  // );
+  const {
+    data: totalExpenses,
+    error: expenseError,
+    mutate: expenseMutate,
+  } = useSWR(
+    currentUser ? "/totalExpenses" : null,
+    (url) => expensesFetcher(url, currentUser?.uid),
+    {
+      suspense: true,
+    }
+  );
+  const {
+    data: completedHabits,
+    error: habitsError,
+    mutate: habitsMutate,
+  } = useSWR(
+    currentUser ? "/completedHabits" : null,
+    (url) => goalsfetcher(url, currentUser?.uid),
+    {
+      suspense: true,
+    }
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -101,13 +101,13 @@ const Profile: React.FC<Props> = () => {
   //   );
   // }
 
-  // if (totalExpenses === undefined || completedHabits === undefined) {
-  //   return (
-  //     <div className="h-full flex justify-center items-center">
-  //       <Spinner />
-  //     </div>
-  //   );
-  // }
+  if (totalExpenses === undefined || completedHabits === undefined) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-4">
