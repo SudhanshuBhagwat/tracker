@@ -80,9 +80,6 @@ const Profile: React.FC<Props> = () => {
   useEffect(() => {
     if (!fetchingUser && !currentUser) {
       router.replace("/auth");
-    } else if (!fetchingUser && currentUser) {
-      expenseMutate();
-      habitsMutate();
     }
   }, [currentUser, fetchingUser, expenseMutate, habitsMutate, router]);
 
@@ -101,13 +98,13 @@ const Profile: React.FC<Props> = () => {
   //   );
   // }
 
-  // if (totalExpenses === undefined || completedHabits === undefined) {
-  //   return (
-  //     <div className="h-full flex justify-center items-center">
-  //       <Spinner />
-  //     </div>
-  //   );
-  // }
+  if (!totalExpenses || !completedHabits) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-4">
