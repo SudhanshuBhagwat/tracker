@@ -9,6 +9,9 @@ import { auth, firestore, useAuth } from "../config/firebase";
 
 const goalsfetcher = async (url: string, id: string | undefined) => {
   let totalGoalsCompleted = 0;
+  if (!id || id === undefined) {
+    return totalGoalsCompleted;
+  }
 
   try {
     const snapshots = await getDocs(
@@ -31,6 +34,9 @@ const goalsfetcher = async (url: string, id: string | undefined) => {
 
 const expensesFetcher = async (url: string, id: string | undefined) => {
   let totalExpenses = 0;
+  if (!id || id === undefined) {
+    return totalExpenses;
+  }
 
   try {
     const snapshots = await getDocs(
@@ -88,17 +94,17 @@ const Profile: React.FC<Props> = () => {
     auth.signOut();
   }
 
-  // if (expenseError || habitsError) {
-  //   return (
-  //     <div className="h-full flex justify-center items-center">
-  //       <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
-  //         An unexpected error occurred
-  //       </span>
-  //     </div>
-  //   );
-  // }
+  if (expenseError || habitsError) {
+    return (
+      <div className="h-full flex justify-center items-center">
+        <span className="px-4 py-2 bg-red-500 rounded-md font-medium text-white">
+          An unexpected error occurred
+        </span>
+      </div>
+    );
+  }
 
-  if (!totalExpenses || !completedHabits) {
+  if (totalExpenses === undefined || completedHabits === undefined) {
     return (
       <div className="h-full flex justify-center items-center">
         <Spinner />
