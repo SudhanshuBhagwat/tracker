@@ -4,6 +4,7 @@ import {
   isSameDay,
   isThisMonth,
   isToday,
+  parseISO,
   startOfToday,
 } from "date-fns";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -74,7 +75,7 @@ const Money: React.FC = () => {
   );
   const todaysExpenses =
     data?.totalExpenses.filter((expense) => {
-      return isSameDay(new Date(expense.createdAt), selectedDay);
+      return isSameDay(parseISO(expense.createdAt), selectedDay);
     }) || [];
 
   useEffect(() => {
