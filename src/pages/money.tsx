@@ -1,10 +1,17 @@
 import { PlusIcon } from "@heroicons/react/outline";
-import { isThisMonth, isToday } from "date-fns";
+import {
+  isEqual,
+  isSameDay,
+  isThisMonth,
+  isToday,
+  startOfToday,
+} from "date-fns";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import useSWR, { mutate as gMutate } from "swr";
 import AddExpense from "../components/AddExpense";
+import Calendar from "../components/Calendar";
 import Expense from "../components/Expense";
 import Spinner from "../components/Spinner";
 import { firestore, useAuth } from "../config/firebase";
@@ -15,11 +22,11 @@ const fetcher = async (
   url: string,
   uid: string | undefined
 ): Promise<{
-  todaysExpenses: ExpenseType[];
+  // todaysExpenses: ExpenseType[];
   totalExpenses: ExpenseType[];
 }> => {
   const totalExpenses: ExpenseType[] = [];
-  const todaysExpenses: ExpenseType[] = [];
+  // const todaysExpenses: ExpenseType[] = [];
   try {
     const snapshot = await getDocs(
       query(collection(firestore, url), where("createdBy", "==", uid))
@@ -35,9 +42,9 @@ const fetcher = async (
         other: data.other,
         createdAt: data.createdAt,
       };
-      if (isToday(new Date(expense.createdAt))) {
-        todaysExpenses.push(expense);
-      }
+      // if (isSameDay(new Date(expense.createdAt), day)) {
+      //   todaysExpenses.push(expense);
+      // }
       if (isThisMonth(new Date(expense.createdAt))) {
         totalExpenses.push(expense);
       }
@@ -47,7 +54,7 @@ const fetcher = async (
   }
 
   return {
-    todaysExpenses,
+    // todaysExpenses,
     totalExpenses,
   };
 };
@@ -55,14 +62,20 @@ const fetcher = async (
 const Money: React.FC = () => {
   const { currentUser, fetchingUser } = useAuth();
   const router = useRouter();
-  const { data, error, mutate } = useSWR(
-    currentUser ? "/expenses" : null,
-    (url) => fetcher(url, currentUser?.uid)
-  );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseType | null>();
   const { addExpense, updateExpense, removeExpense } = useFirestore();
+  const today = startOfToday();
+  const [selectedDay, setSelectedDay] = useState(today);
+  const { data, error, mutate } = useSWR(
+    currentUser ? "/expenses" : null,
+    (url) => fetcher(url, currentUser?.uid)
+  );
+  const todaysExpenses =
+    data?.totalExpenses.filter((expense) => {
+      return isSameDay(new Date(expense.createdAt), selectedDay);
+    }) || [];
 
   useEffect(() => {
     if (!fetchingUser && !currentUser) {
@@ -124,12 +137,17 @@ const Money: React.FC = () => {
           Add Expenses
         </button>
       </div>
+      <Calendar
+        mode="weekly"
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+      />
       <div className="w-full h-full mt-4 space-y-4">
         <div className="flex flex-col">
           <h3 className="text-xl font-semibold">Today</h3>
-          {data && data.todaysExpenses.length > 0 ? (
+          {todaysExpenses.length > 0 ? (
             <div className="mt-2 space-y-2">
-              {data.todaysExpenses.map((expense) => {
+              {todaysExpenses.map((expense) => {
                 return (
                   <Expense
                     key={expense.id}
