@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/outline";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { Expense } from "../types";
+import CustomDisclosure from "./CustomDisclosure";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
 
@@ -214,83 +215,59 @@ const AddExpense: React.FC<Props> = ({
               placeholder="Please enter the amount of you expense"
             />
           </div>
-          <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <Disclosure defaultOpen={isRepeating}>
-              {({ open }) => {
-                return (
-                  <>
-                    <Disclosure.Button className="flex justify-between items-center w-full text-lg font-medium text-left">
-                      <span>Is Repeating Monthly?</span>
-                      <Switch
-                        as="div"
-                        checked={open}
-                        onChange={setIsRepeating}
-                        className={`${
-                          open ? "bg-blue-400" : "bg-gray-200"
-                        } relative inline-flex items-center h-8 rounded-full w-14 transition`}
-                      >
-                        <span className="sr-only">Enable notifications</span>
-                        <span
-                          className={`${
-                            open ? "translate-x-7" : "translate-x-1"
-                          } inline-block w-6 h-6 transform bg-white rounded-full transition ease-in-out duration-150`}
-                        />
-                      </Switch>
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
-                      <div className="w-full flex flex-col items-start space-y-3">
-                        <span className="text-gray-400 text-base text-left">
-                          {months === 1 ? "Mothly" : `Every ${months} months`}
-                        </span>
-                        <RadioGroup
-                          value={months}
-                          onChange={setMonths}
-                          className="w-full"
-                        >
-                          <RadioGroup.Label className="sr-only">
-                            Frequency in Months
-                          </RadioGroup.Label>
-                          <div className="flex justify-center">
-                            <span
-                              className="grid grid-rows-2 grid-cols-6 justify-between"
-                              style={{
-                                rowGap: "0.5em",
-                                columnGap: "1em",
-                              }}
-                            >
-                              {[...Array(12).keys()]
-                                .map((el) => el + 1)
-                                .map((number) => {
-                                  return (
-                                    <RadioGroup.Option
-                                      key={number}
-                                      value={number}
-                                      className="transition"
-                                    >
-                                      {({ checked }) => (
-                                        <span
-                                          className={`${
-                                            checked
-                                              ? "bg-blue-400 text-white border-blue-400"
-                                              : "text-gray-400 border-gray-200"
-                                          } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
-                                        >
-                                          {number}
-                                        </span>
-                                      )}
-                                    </RadioGroup.Option>
-                                  );
-                                })}
-                            </span>
-                          </div>
-                        </RadioGroup>
-                      </div>
-                    </Disclosure.Panel>
-                  </>
-                );
-              }}
-            </Disclosure>
-          </div>
+          <CustomDisclosure
+            label="Is Repeating Monthly?"
+            isOpen={isRepeating}
+            setIsOpen={setIsRepeating}
+          >
+            <div className="w-full flex flex-col items-start space-y-3">
+              <span className="text-gray-400 text-base text-left">
+                {months === 1 ? "Mothly" : `Every ${months} months`}
+              </span>
+              <RadioGroup
+                value={months}
+                onChange={setMonths}
+                className="w-full"
+              >
+                <RadioGroup.Label className="sr-only">
+                  Frequency in Months
+                </RadioGroup.Label>
+                <div className="flex justify-center">
+                  <span
+                    className="grid grid-rows-2 grid-cols-6 justify-between"
+                    style={{
+                      rowGap: "0.5em",
+                      columnGap: "1em",
+                    }}
+                  >
+                    {[...Array(12).keys()]
+                      .map((el) => el + 1)
+                      .map((number) => {
+                        return (
+                          <RadioGroup.Option
+                            key={number}
+                            value={number}
+                            className="transition"
+                          >
+                            {({ checked }) => (
+                              <span
+                                className={`${
+                                  checked
+                                    ? "bg-blue-400 text-white border-blue-400"
+                                    : "text-gray-400 border-gray-200"
+                                } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
+                              >
+                                {number}
+                              </span>
+                            )}
+                          </RadioGroup.Option>
+                        );
+                      })}
+                  </span>
+                </div>
+              </RadioGroup>
+            </div>
+          </CustomDisclosure>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
             <div className="flex justify-between items-center w-full text-lg font-medium text-left">
               <span>Category</span>

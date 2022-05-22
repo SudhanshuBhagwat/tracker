@@ -2,6 +2,7 @@ import { Disclosure, RadioGroup, Switch } from "@headlessui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { Goal } from "../types";
 import Checkbox from "./Checkbox";
+import CustomDisclosure from "./CustomDisclosure";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
 
@@ -47,12 +48,14 @@ const AddGoal: React.FC<Props> = ({
   const titleRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState<string>("");
   const [isEveryday, setIsEveryday] = useState<boolean>(false);
+  const [isWeekly, setIsWeekly] = useState<boolean>(
+    (goal && goal.weekly.length > 0) || false
+  );
   const [times, setTimes] = useState<number>(0);
   const [months, setMonths] = useState<number>(0);
   const [days, setDays] = useState<Days>(DAYS);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-  let closeFunction: () => void;
 
   useEffect(() => {
     if (goal) {
@@ -195,149 +198,120 @@ const AddGoal: React.FC<Props> = ({
             <Checkbox
               isDone={isEveryday}
               setIsDone={(value) => {
-                closeFunction();
                 setMessage("");
                 setIsEveryday(value);
               }}
             />
           </div>
-          <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <Disclosure defaultOpen={times > 0}>
-              {({ open, close }) => {
-                closeFunction = close;
-                if (open) {
-                  setTimeout(() => {
-                    setIsEveryday(false);
-                  }, 0);
-                }
-                return (
-                  <>
-                    <Disclosure.Button className="flex justify-between items-center w-full text-lg font-medium text-left">
-                      <span>Is this a Weekly goal?</span>
-                      <Switch
-                        as="div"
-                        checked={open}
-                        onChange={() => {
-                          setMessage("");
-                          setIsEveryday(false);
-                        }}
-                        className={`${
-                          open ? "bg-blue-400" : "bg-gray-200"
-                        } relative inline-flex items-center h-8 rounded-full w-14 transition`}
-                      >
-                        <span className="sr-only">Enable notifications</span>
-                        <span
-                          className={`${
-                            open ? "translate-x-7" : "translate-x-1"
-                          } inline-block w-6 h-6 transform bg-white rounded-full transition ease-in-out duration-150`}
-                        />
-                      </Switch>
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">
-                      <div className="w-full flex flex-col items-start space-y-3">
-                        <span className="text-gray-400 text-base text-left">
-                          {times} {times > 1 ? "times" : "time"} per week
-                        </span>
-                        <RadioGroup
-                          value={times}
-                          onChange={(t) => {
-                            setIsEveryday(false);
-                            setTimes(t);
-                          }}
-                          className="w-full"
-                        >
-                          <RadioGroup.Label className="sr-only">
-                            Frequency
-                          </RadioGroup.Label>
-                          <div className="flex justify-center">
-                            <span className="relative z-0 inline-flex justify-between w-full">
-                              {[...Array(6).keys()]
-                                .map((el) => el + 1)
-                                .map((number) => {
-                                  return (
-                                    <RadioGroup.Option
-                                      key={number}
-                                      value={number}
-                                      className="transition"
-                                    >
-                                      {({ checked }) => (
-                                        <span
-                                          className={`${
-                                            checked
-                                              ? "bg-blue-400 text-white border-blue-400"
-                                              : "text-gray-400 border-gray-200"
-                                          } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
-                                        >
-                                          {number}
-                                        </span>
-                                      )}
-                                    </RadioGroup.Option>
-                                  );
-                                })}
-                            </span>
-                          </div>
-                        </RadioGroup>
-                      </div>
-                      <div className="w-full flex flex-col items-start space-y-3">
-                        <span className="text-gray-400 text-base">
-                          On {getWeekString()}
-                        </span>
-                        <Switch.Group>
-                          <Switch.Label className="sr-only">
-                            Days of the week
-                          </Switch.Label>
-                          <div className="flex justify-center w-full">
-                            <span className="relative z-0 inline-flex justify-between w-full">
-                              {Object.keys(days).map((day) => {
-                                return (
-                                  <Switch
-                                    key={day}
-                                    checked={days[day]}
-                                    onChange={() => {
-                                      const isTrue = days[day];
-                                      const enabledDays = Object.keys(
-                                        days
-                                      ).filter((day) => days[day]);
+          <CustomDisclosure
+            label="Is this a Weekly goal?"
+            isOpen={isWeekly}
+            setIsOpen={(value) => {
+              if (value) {
+                setMessage("");
+                setIsEveryday(false);
+              }
+              setIsWeekly(value);
+            }}
+          >
+            <div className="w-full flex flex-col items-start space-y-3">
+              <span className="text-gray-400 text-base text-left">
+                {times} {times > 1 ? "times" : "time"} per week
+              </span>
+              <RadioGroup
+                value={times}
+                onChange={(t) => {
+                  setIsEveryday(false);
+                  setTimes(t);
+                }}
+                className="w-full"
+              >
+                <RadioGroup.Label className="sr-only">
+                  Frequency
+                </RadioGroup.Label>
+                <div className="flex justify-center">
+                  <span className="relative z-0 inline-flex justify-between w-full">
+                    {[...Array(6).keys()]
+                      .map((el) => el + 1)
+                      .map((number) => {
+                        return (
+                          <RadioGroup.Option
+                            key={number}
+                            value={number}
+                            className="transition"
+                          >
+                            {({ checked }) => (
+                              <span
+                                className={`${
+                                  checked
+                                    ? "bg-blue-400 text-white border-blue-400"
+                                    : "text-gray-400 border-gray-200"
+                                } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
+                              >
+                                {number}
+                              </span>
+                            )}
+                          </RadioGroup.Option>
+                        );
+                      })}
+                  </span>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="w-full flex flex-col items-start space-y-3">
+              <span className="text-gray-400 text-base">
+                On {getWeekString()}
+              </span>
+              <Switch.Group>
+                <Switch.Label className="sr-only">
+                  Days of the week
+                </Switch.Label>
+                <div className="flex justify-center w-full">
+                  <span className="relative z-0 inline-flex justify-between w-full">
+                    {Object.keys(days).map((day) => {
+                      return (
+                        <Switch
+                          key={day}
+                          checked={days[day]}
+                          onChange={() => {
+                            const isTrue = days[day];
+                            const enabledDays = Object.keys(days).filter(
+                              (day) => days[day]
+                            );
 
-                                      if (
-                                        (!isTrue &&
-                                          enabledDays.length < times) ||
-                                        isTrue
-                                      ) {
-                                        setDays((old) => {
-                                          return {
-                                            ...old,
-                                            [day]: !days[day],
-                                          };
-                                        });
-                                      }
-                                    }}
-                                    className="transition"
-                                  >
-                                    {({ checked }) => (
-                                      <span
-                                        className={`${
-                                          checked
-                                            ? "bg-blue-400 text-white border-blue-400"
-                                            : "text-gray-400 border-gray-200"
-                                        } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
-                                      >
-                                        {day.charAt(0)}
-                                      </span>
-                                    )}
-                                  </Switch>
-                                );
-                              })}
+                            if (
+                              (!isTrue && enabledDays.length < times) ||
+                              isTrue
+                            ) {
+                              setDays((old) => {
+                                return {
+                                  ...old,
+                                  [day]: !days[day],
+                                };
+                              });
+                            }
+                          }}
+                          className="transition"
+                        >
+                          {({ checked }) => (
+                            <span
+                              className={`${
+                                checked
+                                  ? "bg-blue-400 text-white border-blue-400"
+                                  : "text-gray-400 border-gray-200"
+                              } w-10 h-10 border rounded-full inline-flex justify-center items-center transition`}
+                            >
+                              {day.charAt(0)}
                             </span>
-                          </div>
-                        </Switch.Group>
-                      </div>
-                    </Disclosure.Panel>
-                  </>
-                );
-              }}
-            </Disclosure>
-          </div>
+                          )}
+                        </Switch>
+                      );
+                    })}
+                  </span>
+                </div>
+              </Switch.Group>
+            </div>
+          </CustomDisclosure>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
             <div className="flex justify-between items-center w-full text-lg font-medium text-left">
               <span>Repeat for months</span>
