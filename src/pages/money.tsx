@@ -8,6 +8,7 @@ import {
   startOfToday,
 } from "date-fns";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import useSWR, { mutate as gMutate } from "swr";
@@ -193,14 +194,17 @@ const Money: React.FC = () => {
           )}
         </div>
       </div>
-      <AddExpense
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        mode={mode}
-        expense={selectedExpense}
-        handleSubmit={handleSubmit}
-        handleRemove={handleRemove}
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <AddExpense
+            setIsOpen={setIsOpen}
+            mode={mode}
+            expense={selectedExpense}
+            handleSubmit={handleSubmit}
+            handleRemove={handleRemove}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

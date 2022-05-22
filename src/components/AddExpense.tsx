@@ -16,7 +16,6 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 
 interface Props {
-  isOpen: boolean;
   setIsOpen: (value: boolean) => void;
   mode: "ADD" | "EDIT" | null | undefined;
   expense: Expense | null | undefined;
@@ -65,7 +64,6 @@ export const ExpenseIconMap: {
 };
 
 const AddExpense: React.FC<Props> = ({
-  isOpen,
   setIsOpen,
   mode,
   expense,
@@ -113,7 +111,7 @@ const AddExpense: React.FC<Props> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={setIsOpen}>
+    <Modal onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
         <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button

@@ -21,6 +21,7 @@ import useSWR, { mutate as gMutate } from "swr";
 import Spinner from "../components/Spinner";
 import { useRouter } from "next/router";
 import Calendar from "../components/Calendar";
+import { AnimatePresence } from "framer-motion";
 
 const fetcher = async (
   url: string,
@@ -213,14 +214,17 @@ const Home: NextPage = () => {
           )}
         </div>
       </div>
-      <AddGoal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        handleSubmit={handleSubmit}
-        handleRemove={handleRemove}
-        mode={mode}
-        goal={selectedGoal}
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <AddGoal
+            setIsOpen={setIsOpen}
+            handleSubmit={handleSubmit}
+            handleRemove={handleRemove}
+            mode={mode}
+            goal={selectedGoal}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
