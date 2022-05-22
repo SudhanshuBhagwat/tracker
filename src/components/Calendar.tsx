@@ -4,14 +4,18 @@ import {
   format,
   eachDayOfInterval,
   startOfToday,
-  isEqual,
+  isEqual as isSameDay,
   isSameMonth,
   isToday,
   parse,
   add,
   getDay,
   endOfWeek,
+  parseISO,
 } from "date-fns";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 interface Props {
@@ -35,29 +39,21 @@ let colStartClasses = [
   "col-start-7",
 ];
 
-const Calendar: React.FC<Props> = ({
-  mode = "weekly",
-  selectedDay,
-  setSelectedDay,
-}) => {
-  // const today = startOfToday();
+const Calendar: React.FC<Props> = ({ mode = "weekly" }) => {
+  const today = startOfToday();
 
   return mode === "monthly" ? (
-    <MonthlyCalendar today={selectedDay} />
+    <MonthlyCalendar today={today} />
   ) : (
-    <WeeklyCalendar selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
+    <WeeklyCalendar today={today} />
   );
 };
 
-const WeeklyCalendar = ({
-  selectedDay,
-  setSelectedDay,
-}: {
-  selectedDay: Date;
-  setSelectedDay: (value: Date) => void;
-}) => {
-  // const [selectedDay, setSelectedDay] = useState(today);
-  let [currentWeek, setCurrentWeek] = useState(format(selectedDay, "w"));
+const WeeklyCalendar = ({ today }: { today: Date }) => {
+  const router = useRouter();
+  const { day } = router.query;
+  const currentDay = (day && parseISO(day as string)) || today;
+  let [currentWeek, setCurrentWeek] = useState(format(currentDay, "w"));
   let firstDayofWeek = parse(currentWeek, "w", new Date());
 
   let days = eachDayOfInterval({
@@ -110,33 +106,41 @@ const WeeklyCalendar = ({
                 )}
                 key={day.toString()}
               >
-                <button
-                  onClick={() => setSelectedDay(day)}
-                  className={classNames(
-                    isEqual(day, selectedDay) && "text-white",
-                    !isEqual(day, selectedDay) &&
-                      isToday(day) &&
-                      "text-red-500",
-                    !isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      isSameMonth(day, firstDayofWeek) &&
-                      "text-gray-900",
-                    !isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      !isSameMonth(day, firstDayofWeek) &&
-                      "text-gray-400",
-                    isEqual(day, selectedDay) && isToday(day) && "bg-red-500",
-                    isEqual(day, selectedDay) && !isToday(day) && "bg-gray-900",
-                    !isEqual(day, selectedDay) && "hover:bg-gray-200",
-                    (isEqual(day, selectedDay) || isToday(day)) &&
-                      "font-semibold",
-                    "mx-auto flex h-8 w-8 items-center justify-center rounded-full transition"
-                  )}
+                <Link
+                  href={`?day=${format(day, "yyyy-MM-dd")}`}
+                  passHref={true}
                 >
-                  <time dateTime={format(day, "yyyy-MM-dd")}>
-                    {format(day, "d")}
-                  </time>
-                </button>
+                  <span
+                    className={classNames(
+                      isSameDay(day, currentDay) && "text-white",
+                      !isSameDay(day, currentDay) &&
+                        isToday(day) &&
+                        "text-red-500",
+                      !isSameDay(day, currentDay) &&
+                        !isToday(day) &&
+                        isSameMonth(day, firstDayofWeek) &&
+                        "text-gray-900",
+                      !isSameDay(day, currentDay) &&
+                        !isToday(day) &&
+                        !isSameMonth(day, firstDayofWeek) &&
+                        "text-gray-400",
+                      isSameDay(day, currentDay) &&
+                        isToday(day) &&
+                        "bg-red-500",
+                      isSameDay(day, currentDay) &&
+                        !isToday(day) &&
+                        "bg-gray-900",
+                      !isSameDay(day, currentDay) && "hover:bg-gray-200",
+                      (isSameDay(day, currentDay) || isToday(day)) &&
+                        "font-semibold",
+                      "mx-auto flex h-8 w-8 items-center justify-center rounded-full transition"
+                    )}
+                  >
+                    <time dateTime={format(day, "yyyy-MM-dd")}>
+                      {format(day, "d")}
+                    </time>
+                  </span>
+                </Link>
               </div>
             );
           })}
@@ -202,22 +206,24 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                 <button
                   onClick={() => setSelectedDay(day)}
                   className={classNames(
-                    isEqual(day, selectedDay) && "text-white",
-                    !isEqual(day, selectedDay) &&
+                    isSameDay(day, selectedDay) && "text-white",
+                    !isSameDay(day, selectedDay) &&
                       isToday(day) &&
                       "text-red-500",
-                    !isEqual(day, selectedDay) &&
+                    !isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       isSameMonth(day, firstDayCurrentMonth) &&
                       "text-gray-900",
-                    !isEqual(day, selectedDay) &&
+                    !isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&
                       "text-gray-400",
-                    isEqual(day, selectedDay) && isToday(day) && "bg-red-500",
-                    isEqual(day, selectedDay) && !isToday(day) && "bg-gray-900",
-                    !isEqual(day, selectedDay) && "hover:bg-gray-200",
-                    (isEqual(day, selectedDay) || isToday(day)) &&
+                    isSameDay(day, selectedDay) && isToday(day) && "bg-red-500",
+                    isSameDay(day, selectedDay) &&
+                      !isToday(day) &&
+                      "bg-gray-900",
+                    !isSameDay(day, selectedDay) && "hover:bg-gray-200",
+                    (isSameDay(day, selectedDay) || isToday(day)) &&
                       "font-semibold",
                     "mx-auto flex h-8 w-8 items-center justify-center rounded-full"
                   )}

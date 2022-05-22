@@ -1,4 +1,4 @@
-import { Disclosure, RadioGroup, Switch } from "@headlessui/react";
+import { RadioGroup } from "@headlessui/react";
 import {
   CakeIcon,
   CashIcon,
@@ -9,6 +9,8 @@ import {
   ShoppingBagIcon,
   TicketIcon,
 } from "@heroicons/react/outline";
+import { parseISO, startOfToday } from "date-fns";
+import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { Expense } from "../types";
 import CustomDisclosure from "./CustomDisclosure";
@@ -81,6 +83,10 @@ const AddExpense: React.FC<Props> = ({
   const [otherTitle, setOtherTitle] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const today = startOfToday();
+  const router = useRouter();
+  const { day } = router.query;
+  const currentDay = (day && parseISO(day as string)) || today;
 
   useEffect(() => {
     if (expense) {
@@ -151,7 +157,7 @@ const AddExpense: React.FC<Props> = ({
                   id: expense?.id,
                   category: category,
                   title: title,
-                  createdAt: expense?.createdAt || new Date().toISOString(),
+                  createdAt: expense?.createdAt || currentDay.toISOString(),
                   months: isRepeating ? months : 0,
                   other: Number(category) === 8 ? otherTitle : "",
                   spent: spent,
@@ -160,7 +166,7 @@ const AddExpense: React.FC<Props> = ({
                 await handleSubmit({
                   category: category,
                   title: title,
-                  createdAt: new Date().toISOString(),
+                  createdAt: currentDay.toISOString(),
                   months: isRepeating ? months : 0,
                   other: Number(category) === 8 ? otherTitle : "",
                   spent: spent,

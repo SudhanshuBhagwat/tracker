@@ -69,6 +69,8 @@ const Money: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<ExpenseType | null>();
   const { addExpense, updateExpense, removeExpense } = useFirestore();
   const today = startOfToday();
+  const { day } = router.query;
+  const currentDay = (day && parseISO(day as string)) || today;
   const [selectedDay, setSelectedDay] = useState(today);
   const { data, error, mutate } = useSWR(
     currentUser ? "/expenses" : null,
@@ -76,7 +78,7 @@ const Money: React.FC = () => {
   );
   const todaysExpenses =
     data?.totalExpenses.filter((expense) => {
-      return isSameDay(parseISO(expense.createdAt), selectedDay);
+      return isSameDay(parseISO(expense.createdAt), currentDay);
     }) || [];
 
   useEffect(() => {

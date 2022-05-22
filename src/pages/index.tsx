@@ -20,7 +20,6 @@ import { format } from "date-fns";
 import useSWR, { mutate as gMutate } from "swr";
 import Spinner from "../components/Spinner";
 import { useRouter } from "next/router";
-import Calendar from "../components/Calendar";
 import { AnimatePresence } from "framer-motion";
 
 const fetcher = async (
