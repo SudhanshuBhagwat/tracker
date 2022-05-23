@@ -10,7 +10,7 @@ import {
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import useSWR, { mutate as gMutate } from "swr";
 import AddExpense from "../components/AddExpense";
 import Calendar from "../components/Calendar";
@@ -24,11 +24,9 @@ const fetcher = async (
   url: string,
   uid: string | undefined
 ): Promise<{
-  // todaysExpenses: ExpenseType[];
   totalExpenses: ExpenseType[];
 }> => {
   const totalExpenses: ExpenseType[] = [];
-  // const todaysExpenses: ExpenseType[] = [];
   try {
     const snapshot = await getDocs(
       query(collection(firestore, url), where("createdBy", "==", uid))
@@ -44,9 +42,6 @@ const fetcher = async (
         other: data.other,
         createdAt: data.createdAt,
       };
-      // if (isSameDay(new Date(expense.createdAt), day)) {
-      //   todaysExpenses.push(expense);
-      // }
       if (isThisMonth(new Date(expense.createdAt))) {
         totalExpenses.push(expense);
       }
@@ -56,7 +51,6 @@ const fetcher = async (
   }
 
   return {
-    // todaysExpenses,
     totalExpenses,
   };
 };
@@ -76,10 +70,13 @@ const Money: React.FC = () => {
     currentUser ? "/expenses" : null,
     (url) => fetcher(url, currentUser?.uid)
   );
-  const todaysExpenses =
-    data?.totalExpenses.filter((expense) => {
-      return isSameDay(parseISO(expense.createdAt), currentDay);
-    }) || [];
+  const todaysExpenses = useMemo(
+    () =>
+      data?.totalExpenses.filter((expense) => {
+        return isSameDay(parseISO(expense.createdAt), currentDay);
+      }) || [],
+    [currentDay, data?.totalExpenses]
+  );
 
   useEffect(() => {
     if (!fetchingUser && !currentUser) {
@@ -171,30 +168,7 @@ const Money: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="">
-          <h3 className="text-xl font-semibold">This Month&apos;s Expenses</h3>
-          {data && data.totalExpenses.length > 0 ? (
-            <div className="mt-2 space-y-2">
-              {data.totalExpenses.map((expense) => {
-                return <Expense key={expense.id} expense={expense} />;
-              })}
-            </div>
-          ) : (
-            <div className="flex flex-col justify-center items-center space-y-2 mt-20">
-              <span>No Expenses added</span>
-              <span className="flex items-center">
-                Press
-                <button className="flex items-center bg-green-200 px-2 py-1 rounded-md mx-2">
-                  <span className="mr-1">
-                    <PlusIcon className="h-4 w-4" />
-                  </span>
-                  Add Expense
-                </button>
-                to add one
-              </span>
-            </div>
-          )}
-        </div>
+        <Expenses expenses={data.totalExpenses} />
       </div>
       <AnimatePresence>
         {isOpen && (
@@ -210,5 +184,36 @@ const Money: React.FC = () => {
     </div>
   );
 };
+
+const AllExpenses = ({ expenses }: { expenses: ExpenseType[] }) => {
+  return (
+    <div className="">
+      <h3 className="text-xl font-semibold">This Month&apos;s Expenses</h3>
+      {expenses && expenses.length > 0 ? (
+        <div className="mt-2 space-y-2">
+          {expenses.map((expense: ExpenseType) => {
+            return <Expense key={expense.id} expense={expense} />;
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center space-y-2 mt-20">
+          <span>No Expenses added</span>
+          <span className="flex items-center">
+            Press
+            <button className="flex items-center bg-green-200 px-2 py-1 rounded-md mx-2">
+              <span className="mr-1">
+                <PlusIcon className="h-4 w-4" />
+              </span>
+              Add Expense
+            </button>
+            to add one
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Expenses = memo(AllExpenses);
 
 export default Money;

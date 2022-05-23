@@ -16,7 +16,7 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 
 interface Props {
   children?: React.ReactNode;
@@ -241,4 +241,4 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
   );
 };
 
-export default Calendar;
+export default memo(Calendar);
