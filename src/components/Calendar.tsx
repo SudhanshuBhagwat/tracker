@@ -209,7 +209,7 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                     isSameDay(day, selectedDay) && "text-white",
                     !isSameDay(day, selectedDay) &&
                       isToday(day) &&
-                      "text-red-500",
+                      "text-primary",
                     !isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       isSameMonth(day, firstDayCurrentMonth) &&
@@ -218,7 +218,7 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&
                       "text-gray-400",
-                    isSameDay(day, selectedDay) && isToday(day) && "bg-red-500",
+                    isSameDay(day, selectedDay) && isToday(day) && "bg-primary",
                     isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       "bg-gray-900",

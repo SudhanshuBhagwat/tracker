@@ -19,7 +19,7 @@ const Footer: React.FC<Props> = () => {
             <Link passHref={true} href="/">
               <SparklesIcon
                 className={`w-6 h-6 cursor-pointer ${
-                  router.pathname === "/" ? "text-blue-400" : "text-gray-400"
+                  router.pathname === "/" ? "text-primary" : "text-gray-400"
                 }`}
               />
             </Link>
@@ -29,7 +29,7 @@ const Footer: React.FC<Props> = () => {
               <CurrencyRupeeIcon
                 className={`w-6 h-6 cursor-pointer ${
                   router.pathname === "/money"
-                    ? "text-blue-400"
+                    ? "text-primary"
                     : "text-gray-400"
                 }`}
               />
@@ -40,7 +40,7 @@ const Footer: React.FC<Props> = () => {
               <UserIcon
                 className={`w-6 h-6 cursor-pointer ${
                   router.pathname === "/profile"
-                    ? "text-blue-400"
+                    ? "text-primary"
                     : "text-gray-400"
                 }`}
               />
