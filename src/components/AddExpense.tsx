@@ -1,14 +1,14 @@
 import { RadioGroup } from "@headlessui/react";
 import {
   CakeIcon,
-  CashIcon,
+  CurrencyRupeeIcon,
   ChartBarIcon,
-  DeviceMobileIcon,
+  DevicePhoneMobileIcon,
   GiftIcon,
   HomeIcon,
   ShoppingBagIcon,
   TicketIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import { parseISO, startOfToday } from "date-fns";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
@@ -41,7 +41,7 @@ export const ExpenseIconMap: {
   },
   3: {
     title: "Recharge",
-    icon: <DeviceMobileIcon className="h-5 w-5" />,
+    icon: <DevicePhoneMobileIcon className="h-5 w-5" />,
   },
   4: {
     title: "Food",
@@ -61,7 +61,7 @@ export const ExpenseIconMap: {
   },
   8: {
     title: "Other",
-    icon: <CashIcon className="h-5 w-5" />,
+    icon: <CurrencyRupeeIcon className="h-5 w-5" />,
   },
 };
 

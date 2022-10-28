@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import type { NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import AddGoal from "../components/AddGoal";

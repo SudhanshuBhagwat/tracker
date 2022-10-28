@@ -1,6 +1,6 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
-import { Fragment } from "react";
+import { Fragment, PropsWithChildren } from "react";
 
 interface Props {
   onClose: (value: boolean) => void;
@@ -8,7 +8,7 @@ interface Props {
 
 const EASE = [0.36, 0.66, 0.04, 1];
 
-const Modal: React.FC<Props> = ({ onClose, children }) => {
+const Modal: React.FC<PropsWithChildren & Props> = ({ onClose, children }) => {
   return (
     <Dialog
       as="div"

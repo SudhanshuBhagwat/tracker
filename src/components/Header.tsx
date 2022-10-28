@@ -1,4 +1,4 @@
-import { ChartSquareBarIcon } from "@heroicons/react/outline";
+import { ChartBarSquareIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import React from "react";
@@ -16,7 +16,7 @@ const Header: React.FC<Props> = () => {
       </h2>
       {isMoney && (
         <button className="w-7 h-7 text-gray-900">
-          <ChartSquareBarIcon />
+          <ChartBarSquareIcon />
         </button>
       )}
     </div>
