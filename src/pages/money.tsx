@@ -121,73 +121,141 @@ const Money: React.FC = () => {
   }
 
   return (
-    <div className="h-full p-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Money</h2>
-        <button
-          className="flex items-center bg-green-200 px-2 py-1 rounded-md"
-          onClick={() => {
-            setMode("ADD");
-            setSelectedExpense(null);
-            setIsOpen((open) => !open);
-          }}
-        >
-          <span className="mr-1">
-            <PlusIcon className="h-4 w-4" />
-          </span>
-          Add Expenses
-        </button>
-      </div>
-      <Calendar
-        mode="weekly"
-        selectedDay={selectedDay}
-        setSelectedDay={setSelectedDay}
-      />
-      <div className="w-full h-full mt-4 space-y-4">
-        <div className="flex flex-col">
-          <h3 className="text-xl font-semibold">Today</h3>
-          {todaysExpenses.length > 0 ? (
-            <div className="mt-2 space-y-2">
-              {todaysExpenses.map((expense) => {
-                return (
-                  <Expense
-                    key={expense.id}
-                    expense={expense}
-                    handleClick={() => {
-                      setSelectedExpense(expense);
-                      setMode("EDIT");
-                      setIsOpen((open) => !open);
-                    }}
-                  />
-                );
-              })}
+    <div className="h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7">
+      <section className="lg:col-span-5 p-4 sm:col-span-1 md:col-span-2 lg:p-0">
+        <div className="w-full space-y-4 lg:space-y-0 lg:mt-0 lg:grid lg:grid-cols-2 lg:h-full">
+          <div className="flex flex-col lg:border-r lg:p-4">
+            <div className="flex justify-between items-center lg:items-start">
+              <h2 className="text-2xl font-semibold">Money</h2>
+              <button
+                className="flex items-center bg-green-200 px-2 py-1 rounded-md"
+                onClick={() => {
+                  setMode("ADD");
+                  setSelectedExpense(null);
+                  setIsOpen((open) => !open);
+                }}
+              >
+                <span className="mr-1">
+                  <PlusIcon className="h-4 w-4" />
+                </span>
+                Add Expenses
+              </button>
             </div>
-          ) : (
-            <div className="h-full flex flex-col justify-center items-center space-y-2 py-6">
-              <span>You&apos;re good for today</span>
-            </div>
-          )}
+            <h3 className="text-xl font-semibold mt-2 lg:mt-4">Today</h3>
+            {todaysExpenses.length > 0 ? (
+              <div className="mt-2 space-y-2">
+                {todaysExpenses.map((expense) => {
+                  return (
+                    <Expense
+                      key={expense.id}
+                      expense={expense}
+                      handleClick={() => {
+                        setSelectedExpense(expense);
+                        setMode("EDIT");
+                        setIsOpen((open) => !open);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="h-full flex flex-col justify-center items-center space-y-2 py-6">
+                <span>You&apos;re good for today</span>
+              </div>
+            )}
+          </div>
+          <Expenses expenses={data.totalExpenses} />
         </div>
-        <Expenses expenses={data.totalExpenses} />
-      </div>
-      <AnimatePresence>
-        {isOpen && (
-          <AddExpense
-            setIsOpen={setIsOpen}
-            mode={mode}
-            expense={selectedExpense}
-            handleSubmit={handleSubmit}
-            handleRemove={handleRemove}
-          />
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {isOpen && (
+            <AddExpense
+              setIsOpen={setIsOpen}
+              mode={mode}
+              expense={selectedExpense}
+              handleSubmit={handleSubmit}
+              handleRemove={handleRemove}
+            />
+          )}
+        </AnimatePresence>
+      </section>
+      <section className="lg:col-span-2 border-l hidden sm:col-span-1 sm:block">
+        <Calendar
+          mode="monthly"
+          selectedDay={selectedDay}
+          setSelectedDay={setSelectedDay}
+        />
+      </section>
     </div>
   );
+
+  // return (
+  //   <div className="h-full p-4">
+  //     <div className="flex justify-between items-center">
+  //       <h2 className="text-2xl font-semibold">Money</h2>
+  //       <button
+  //         className="flex items-center bg-green-200 px-2 py-1 rounded-md"
+  //         onClick={() => {
+  //           setMode("ADD");
+  //           setSelectedExpense(null);
+  //           setIsOpen((open) => !open);
+  //         }}
+  //       >
+  //         <span className="mr-1">
+  //           <PlusIcon className="h-4 w-4" />
+  //         </span>
+  //         Add Expenses
+  //       </button>
+  //     </div>
+  //     <Calendar
+  //       mode="weekly"
+  //       selectedDay={selectedDay}
+  //       setSelectedDay={setSelectedDay}
+  //     />
+  //     <div className="w-full mt-4 space-y-4">
+  //       <div className="flex flex-col">
+  //         <h3 className="text-xl font-semibold">Today</h3>
+  //         {todaysExpenses.length > 0 ? (
+  //           <div className="mt-2 space-y-2">
+  //             {todaysExpenses.map((expense) => {
+  //               return (
+  //                 <Expense
+  //                   key={expense.id}
+  //                   expense={expense}
+  //                   handleClick={() => {
+  //                     setSelectedExpense(expense);
+  //                     setMode("EDIT");
+  //                     setIsOpen((open) => !open);
+  //                   }}
+  //                 />
+  //               );
+  //             })}
+  //           </div>
+  //         ) : (
+  //           <div className="h-full flex flex-col justify-center items-center space-y-2 py-6">
+  //             <span>You&apos;re good for today</span>
+  //           </div>
+  //         )}
+  //       </div>
+  //       <Expenses expenses={data.totalExpenses} />
+  //     </div>
+  //     <AnimatePresence>
+  //       {isOpen && (
+  //         <AddExpense
+  //           setIsOpen={setIsOpen}
+  //           mode={mode}
+  //           expense={selectedExpense}
+  //           handleSubmit={handleSubmit}
+  //           handleRemove={handleRemove}
+  //         />
+  //       )}
+  //     </AnimatePresence>
+  //   </div>
+  // );
 };
 
 const AllExpenses = ({ expenses }: { expenses: ExpenseType[] }) => {
   return (
-    <div className="">
+    <div className="lg:p-4 lg:h-full">
       <h3 className="text-xl font-semibold">This Month&apos;s Expenses</h3>
       {expenses && expenses.length > 0 ? (
         <div className="mt-2 space-y-2">
@@ -196,7 +264,7 @@ const AllExpenses = ({ expenses }: { expenses: ExpenseType[] }) => {
           })}
         </div>
       ) : (
-        <div className="flex flex-col justify-center items-center space-y-2 mt-20">
+        <div className="flex flex-col justify-center items-center space-y-2 mt-20 lg:h-full lg:mt-0">
           <span>No Expenses added</span>
           <span className="flex items-center">
             Press

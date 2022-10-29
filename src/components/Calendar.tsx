@@ -72,7 +72,7 @@ const WeeklyCalendar = ({ today }: { today: Date }) => {
   };
 
   return (
-    <div className="my-4">
+    <div>
       <div className="flex justify-between items-center">
         <h3 className="text-md font-semibold">
           {format(firstDayofWeek, "MMMM yyyy")}
@@ -172,9 +172,11 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
 
   return (
     <div className="my-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-md font-semibold">{format(today, "MMMM yyyy")}</h3>
-        <div className="flex space-x-2">
+      <div className="flex justify-between items-center md:mb-6">
+        <h3 className="text-md sm:px-4 md:px-6 md:text-lg md:font-bold font-semibold">
+          {format(today, "MMMM yyyy")}
+        </h3>
+        <div className="flex space-x-2 md:pr-4">
           <button onClick={nextMonth}>
             <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
           </button>

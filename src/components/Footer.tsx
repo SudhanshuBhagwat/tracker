@@ -12,7 +12,7 @@ interface Props {}
 const Footer: React.FC<Props> = () => {
   const router = useRouter();
   return (
-    <footer className="h-14 w-full flex border-t z-10 fixed bottom-0 bg-white">
+    <footer className="h-14 w-full flex border-t z-10 fixed bottom-0 bg-white sm:hidden">
       <nav className="w-full h-full flex items-center px-8">
         <ul className="w-full flex items-center justify-between">
           <li>
