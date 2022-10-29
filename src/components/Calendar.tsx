@@ -72,8 +72,8 @@ const WeeklyCalendar = ({ today }: { today: Date }) => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center">
+    <div className="mt-4">
+      <div className="flex justify-between items-center px-4">
         <h3 className="text-md font-semibold">
           {format(firstDayofWeek, "MMMM yyyy")}
         </h3>
