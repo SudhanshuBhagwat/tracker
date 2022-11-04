@@ -1,6 +1,8 @@
+import { User } from "@firebase/auth";
 import { format, isThisMonth } from "date-fns";
 import { getDocs, query, collection, where } from "firebase/firestore";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import useSWR from "swr";
@@ -51,7 +53,18 @@ const expensesFetcher = async (url: string, id: string | undefined) => {
   return totalExpenses;
 };
 
-interface Props {}
+const NAVS = [
+  {
+    title: 'Profile',
+    url: '/profile'
+  },
+  {
+    title: 'Settings',
+    url: '/profile?page=settings'
+  },
+]
+
+interface Props { }
 
 const Profile: React.FC<Props> = () => {
   const { currentUser, fetchingUser } = useAuth();
@@ -64,6 +77,7 @@ const Profile: React.FC<Props> = () => {
     (url) => goalsfetcher(url, currentUser?.uid)
   );
   const router = useRouter();
+  const params = router.query;
 
   useEffect(() => {
     if (!fetchingUser && !currentUser) {
@@ -94,68 +108,107 @@ const Profile: React.FC<Props> = () => {
     );
   }
 
+  function getComp(param: string) {
+    switch (param) {
+      case "settings":
+        return <SettingsComp />
+      default:
+        return <ProfileComp currentUser={currentUser} completedHabits={completedHabits} totalExpenses={totalExpenses} handleSignout={handleSignout} />
+    }
+  }
+
   return (
-    <div className="h-full p-4">
-      <div className="h-full flex flex-col justify-between">
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-semibold mb-4">Profile</h2>
-          <div className="flex justify-center pb-6">
-            {currentUser?.photoURL ? (
-              <Image
-                src={currentUser?.photoURL}
-                alt={"Profile Photo"}
-                height={96}
-                width={96}
-                className="rounded-full"
-              />
-            ) : (
-              <Image
-                src={`https://avatars.dicebear.com/api/initials/${currentUser?.displayName}.svg`}
-                alt={"Profile Photo"}
-                height={96}
-                width={96}
-                className="rounded-full"
-              />
-            )}
-          </div>
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <label className="font-medium">Name</label>
-              <span className="text-gray-700">{currentUser?.displayName}</span>
-            </div>
-            <div className="flex justify-between">
-              <label className="font-medium">Email</label>
-              <span className="text-gray-700">{currentUser?.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <label className="font-medium">
-                Total completed Goals{" "}
-                <span className="text-gray-400">
-                  ({format(new Date(), "LLLL")})
-                </span>
-              </label>
-              <span className="text-gray-700">{completedHabits}</span>
-            </div>
-            <div className="flex justify-between">
-              <label className="font-medium">
-                Total Expenses{" "}
-                <span className="text-gray-400">
-                  ({format(new Date(), "LLLL")})
-                </span>
-              </label>
-              <span className="text-gray-700">{totalExpenses} ₹</span>
-            </div>
-          </div>
-        </div>
-        <button
-          onClick={handleSignout}
-          className="w-full px-4 py-2 rounded-md bg-red-500 text-white font-semibold"
-        >
-          Sign Out
-        </button>
+    <div className="h-full flex">
+      <div className="h-full w-60 border-r flex flex-col p-2 space-y-2">
+        {
+          NAVS.map(nav => (
+            <Link key={nav.title} href={nav.url} className="bg-slate-200 w-full px-6 py-2 rounded-sm">
+              {nav.title}
+            </Link>
+          ))
+        }
+      </div>
+      <div className="p-4 h-full flex-1">
+        {getComp(params.page)}
       </div>
     </div>
   );
 };
+
+interface SettingsCompProps { }
+
+const SettingsComp: React.FC<SettingsCompProps> = () => {
+  return <div className="h-full flex flex-col justify-between">
+    <h2 className="text-2xl font-semibold mb-4">Settings</h2>
+  </div>
+}
+
+interface ProfileCompProps {
+  currentUser: User | null | undefined;
+  completedHabits: number | undefined;
+  totalExpenses: number | undefined;
+  handleSignout: () => void;
+}
+
+const ProfileComp: React.FC<ProfileCompProps> = ({ currentUser, completedHabits, totalExpenses, handleSignout }) => {
+  return <div className="h-full flex flex-col justify-between">
+    <div className="flex flex-col">
+      <h2 className="text-2xl font-semibold mb-4">Profile</h2>
+      <div className="flex justify-center pb-6">
+        {currentUser?.photoURL ? (
+          <Image
+            src={currentUser?.photoURL}
+            alt={"Profile Photo"}
+            height={96}
+            width={96}
+            className="rounded-full"
+          />
+        ) : (
+          <Image
+            src={`https://avatars.dicebear.com/api/initials/${currentUser?.displayName}.svg`}
+            alt={"Profile Photo"}
+            height={96}
+            width={96}
+            className="rounded-full"
+          />
+        )}
+      </div>
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <label className="font-medium">Name</label>
+          <span className="text-gray-700">{currentUser?.displayName}</span>
+        </div>
+        <div className="flex justify-between">
+          <label className="font-medium">Email</label>
+          <span className="text-gray-700">{currentUser?.email}</span>
+        </div>
+        <div className="flex justify-between">
+          <label className="font-medium">
+            Total completed Goals{" "}
+            <span className="text-gray-400">
+              ({format(new Date(), "LLLL")})
+            </span>
+          </label>
+          <span className="text-gray-700">{completedHabits}</span>
+        </div>
+        <div className="flex justify-between">
+          <label className="font-medium">
+            Total Expenses{" "}
+            <span className="text-gray-400">
+              ({format(new Date(), "LLLL")})
+            </span>
+          </label>
+          <span className="text-gray-700">{totalExpenses} ₹</span>
+        </div>
+      </div>
+    </div>
+    <button
+      onClick={handleSignout}
+      className="w-full px-4 py-2 rounded-md bg-red-500 text-white font-semibold"
+    >
+      Sign Out
+    </button>
+  </div>
+}
 
 export default Profile;

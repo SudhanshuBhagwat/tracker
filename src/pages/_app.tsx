@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const { currentUser, fetchingUser } = useAuth();
 
   return (
-    <div className="flex flex-col h-screen select-none">
+    <div className="flex flex-col h-screen select-none overflow-hidden">
       <Head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
