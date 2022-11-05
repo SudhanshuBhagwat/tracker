@@ -1,6 +1,5 @@
 import Papa from "papaparse";
 import React, { useState } from "react";
-import readXlsxFile from "read-excel-file";
 import useFirestore from "../hooks/useFirestore";
 import { Expense } from "../types";
 import Modal from "./Modal";
