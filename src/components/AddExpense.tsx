@@ -121,7 +121,7 @@ const AddExpense: React.FC<Props> = ({
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
         <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
           <button
-            className="text-lg font-md font-normal text-blue-400"
+            className="text-lg font-md font-normal text-red-400"
             onClick={handleIsOpen}
           >
             Close
@@ -130,7 +130,7 @@ const AddExpense: React.FC<Props> = ({
             {mode === "ADD" ? "Add" : "Edit"} Expense
           </h2>
           <button
-            className="text-lg font-md font-semibold text-blue-400 w-11"
+            className="text-lg font-md font-semibold text-primary w-11"
             onClick={async () => {
               setIsSaving(true);
 

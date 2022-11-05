@@ -72,8 +72,8 @@ const WeeklyCalendar = ({ today }: { today: Date }) => {
   };
 
   return (
-    <div className="my-4">
-      <div className="flex justify-between items-center">
+    <div className="mt-4">
+      <div className="flex justify-between items-center px-4">
         <h3 className="text-md font-semibold">
           {format(firstDayofWeek, "MMMM yyyy")}
         </h3>
@@ -172,9 +172,11 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
 
   return (
     <div className="my-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-md font-semibold">{format(today, "MMMM yyyy")}</h3>
-        <div className="flex space-x-2">
+      <div className="flex justify-between items-center md:mb-6">
+        <h3 className="text-md sm:px-4 md:px-6 md:text-lg md:font-bold font-semibold">
+          {format(today, "MMMM yyyy")}
+        </h3>
+        <div className="flex space-x-2 md:pr-4">
           <button onClick={nextMonth}>
             <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
           </button>
@@ -209,7 +211,7 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                     isSameDay(day, selectedDay) && "text-white",
                     !isSameDay(day, selectedDay) &&
                       isToday(day) &&
-                      "text-red-500",
+                      "text-primary",
                     !isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       isSameMonth(day, firstDayCurrentMonth) &&
@@ -218,7 +220,7 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&
                       "text-gray-400",
-                    isSameDay(day, selectedDay) && isToday(day) && "bg-red-500",
+                    isSameDay(day, selectedDay) && isToday(day) && "bg-primary",
                     isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       "bg-gray-900",

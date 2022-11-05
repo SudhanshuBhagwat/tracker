@@ -12,14 +12,14 @@ interface Props {}
 const Footer: React.FC<Props> = () => {
   const router = useRouter();
   return (
-    <footer className="h-14 w-full flex border-t z-10 fixed bottom-0 bg-white">
+    <footer className="h-14 w-full flex border-t z-10 fixed bottom-0 bg-white sm:hidden">
       <nav className="w-full h-full flex items-center px-8">
         <ul className="w-full flex items-center justify-between">
           <li>
             <Link passHref={true} href="/">
               <SparklesIcon
                 className={`w-6 h-6 cursor-pointer ${
-                  router.pathname === "/" ? "text-blue-400" : "text-gray-400"
+                  router.pathname === "/" ? "text-primary" : "text-gray-400"
                 }`}
               />
             </Link>
@@ -29,7 +29,7 @@ const Footer: React.FC<Props> = () => {
               <CurrencyRupeeIcon
                 className={`w-6 h-6 cursor-pointer ${
                   router.pathname === "/money"
-                    ? "text-blue-400"
+                    ? "text-primary"
                     : "text-gray-400"
                 }`}
               />
@@ -40,7 +40,7 @@ const Footer: React.FC<Props> = () => {
               <UserIcon
                 className={`w-6 h-6 cursor-pointer ${
                   router.pathname === "/profile"
-                    ? "text-blue-400"
+                    ? "text-primary"
                     : "text-gray-400"
                 }`}
               />
