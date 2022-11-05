@@ -122,7 +122,7 @@ const Profile: React.FC<Props> = () => {
 
   return (
     <div className="h-full flex">
-      <div className="h-full w-60 border-r flex flex-col p-2 space-y-2">
+      <div className="h-full md:w-60 border-r flex-col p-2 space-y-2 hidden md:flex">
         {
           NAVS.map(nav => {
             return <Link key={nav.title} href={nav.url} className={`${nav.slug === (new URLSearchParams(window.location.search).get('page')) ? 'bg-slate-200 font-bold' : ''} w-full px-6 py-2 rounded-sm`}>
@@ -131,7 +131,7 @@ const Profile: React.FC<Props> = () => {
           })
         }
       </div>
-      <div className="p-4 h-full flex-1">
+      <div className="p-4 h-full w-full flex-1">
         {getComp(page as string)}
       </div>
     </div>
@@ -155,7 +155,7 @@ interface ProfileCompProps {
 
 const ProfileComp: React.FC<ProfileCompProps> = ({ currentUser, completedHabits, totalExpenses, handleSignout }) => {
   console.log(currentUser)
-  return <div className="grid grid-cols-2 h-full">
+  return <div className="md:grid md:grid-cols-2 h-full w-full">
     <div className="h-full flex flex-col justify-between">
       <div className="flex flex-col">
         <h2 className="text-2xl font-semibold mb-4">Profile</h2>
