@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { CloudArrowUpIcon, PlusIcon } from "@heroicons/react/24/outline";
 import {
   isEqual,
   isSameDay,
@@ -16,6 +16,7 @@ import AddExpense from "../components/AddExpense";
 import Calendar from "../components/Calendar";
 import Expense from "../components/Expense";
 import Spinner from "../components/Spinner";
+import UploadExpenses from "../components/UploadExpenses";
 import { firestore, useAuth } from "../config/firebase";
 import useFirestore from "../hooks/useFirestore";
 import type { Expense as ExpenseType } from "../types";
@@ -59,6 +60,7 @@ const Money: React.FC = () => {
   const { currentUser, fetchingUser } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<"ADD" | "EDIT" | null>(null);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseType | null>();
   const { addExpense, updateExpense, removeExpense } = useFirestore();
@@ -134,19 +136,31 @@ const Money: React.FC = () => {
           <div className="flex flex-col lg:border-r lg:p-4">
             <div className="flex justify-between items-center lg:items-start">
               <h2 className="text-2xl font-semibold">Money</h2>
-              <button
-                className="flex items-center bg-green-200 px-2 py-1 rounded-md"
-                onClick={() => {
-                  setMode("ADD");
-                  setSelectedExpense(null);
-                  setIsOpen((open) => !open);
-                }}
-              >
-                <span className="mr-1">
-                  <PlusIcon className="h-4 w-4" />
-                </span>
-                Add Expenses
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  className="flex items-center bg-green-200 p-2 rounded-md"
+                  onClick={() => {
+                    setIsUploadOpen((open) => !open);
+                  }}
+                >
+                  <span className="">
+                    <CloudArrowUpIcon className="h-4 w-4" />
+                  </span>
+                </button>
+                <button
+                  className="flex items-center bg-green-200 px-2 py-1 rounded-md"
+                  onClick={() => {
+                    setMode("ADD");
+                    setSelectedExpense(null);
+                    setIsOpen((open) => !open);
+                  }}
+                >
+                  <span className="mr-1">
+                    <PlusIcon className="h-4 w-4" />
+                  </span>
+                  Add Expenses
+                </button>
+              </div>
             </div>
             <h3 className="text-xl font-semibold mt-2 lg:mt-4">Today</h3>
             {todaysExpenses.length > 0 ? (
@@ -181,6 +195,13 @@ const Money: React.FC = () => {
               expense={selectedExpense}
               handleSubmit={handleSubmit}
               handleRemove={handleRemove}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {isUploadOpen && (
+            <UploadExpenses
+              setIsOpen={setIsUploadOpen}
             />
           )}
         </AnimatePresence>

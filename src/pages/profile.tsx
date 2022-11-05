@@ -119,7 +119,6 @@ const Profile: React.FC<Props> = () => {
     }
   }
 
-
   return (
     <div className="h-full flex">
       <div className="h-full md:w-60 border-r flex-col p-2 space-y-2 hidden md:flex">
@@ -154,7 +153,6 @@ interface ProfileCompProps {
 }
 
 const ProfileComp: React.FC<ProfileCompProps> = ({ currentUser, completedHabits, totalExpenses, handleSignout }) => {
-  console.log(currentUser)
   return <div className="md:grid md:grid-cols-1 lg:grid-cols-2 h-full w-full">
     <div className="h-full flex flex-col justify-between">
       <div className="flex flex-col">
