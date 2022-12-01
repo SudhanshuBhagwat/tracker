@@ -140,7 +140,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className="h-full flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
+    <div className="flex flex-1 flex-col sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
       <section className="lg:col-span-5 p-4 sm:col-span-1 md:col-span-1 lg:p-0">
         <div className="w-full space-y-4 lg:space-y-0 lg:mt-0 lg:grid lg:grid-cols-2 lg:h-full">
           <div className="flex flex-col lg:border-r lg:p-4">

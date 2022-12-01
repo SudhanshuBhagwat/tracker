@@ -123,7 +123,7 @@ const Money: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
+    <div className="flex flex-col flex-1 sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
       <section className="sm:hidden">
         <Calendar
           mode="weekly"
@@ -199,11 +199,7 @@ const Money: React.FC = () => {
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {isUploadOpen && (
-            <UploadExpenses
-              setIsOpen={setIsUploadOpen}
-            />
-          )}
+          {isUploadOpen && <UploadExpenses setIsOpen={setIsUploadOpen} />}
         </AnimatePresence>
       </section>
       <section className="lg:col-span-2 border-l hidden sm:col-span-1 sm:block">

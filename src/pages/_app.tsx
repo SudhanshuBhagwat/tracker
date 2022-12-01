@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       {!fetchingUser && currentUser ? (
         <>
           <Header />
-          <main className="flex-1 mt-14 pb-14 sm:pb-0">
+          <main className="flex-1 mt-14 pb-14 sm:pb-0 min-h-0 overflow-y-auto">
             <Component {...pageProps} />
           </main>
           <Footer />
