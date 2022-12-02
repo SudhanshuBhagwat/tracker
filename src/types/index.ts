@@ -17,3 +17,8 @@ export interface Expense {
   other?: string;
   createdAt: string;
 }
+
+export interface Feedback {
+  title: string;
+  description: string;
+}

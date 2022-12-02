@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { useState } from "react";
 import { auth, firestore } from "../config/firebase";
-import { Expense, Goal } from "../types";
+import { Expense, Feedback, Goal } from "../types";
 
 function useFirestore() {
   const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -82,6 +82,17 @@ function useFirestore() {
     }
   }
 
+  async function submitFeedback(feedback: Feedback) {
+    try {
+      await addDoc(collection(firestore, "feedback"), {
+        ...feedback,
+        createdBy: user?.uid,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return {
     addGoal,
     updateGoal,
@@ -90,6 +101,7 @@ function useFirestore() {
     addExpense,
     updateExpense,
     removeExpense,
+    submitFeedback,
   };
 }
 
