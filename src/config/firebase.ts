@@ -24,9 +24,9 @@ let auth: Auth;
 let firestore: Firestore;
 if (process.env.NODE_ENV === "development") {
   firestore = getFirestore();
-  connectFirestoreEmulator(firestore, "localhost", 9091);
+  connectFirestoreEmulator(firestore, "192.168.1.106", 9091);
   auth = getAuth();
-  connectAuthEmulator(auth, "http://localhost:9090", {
+  connectAuthEmulator(auth, "http://192.168.1.106:9090", {
     disableWarnings: true,
   });
 } else {

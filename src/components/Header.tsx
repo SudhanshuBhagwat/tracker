@@ -1,22 +1,21 @@
-import { ChartBarSquareIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import React from "react";
-import {
-  SparklesIcon,
-  UserIcon,
-  CurrencyRupeeIcon,
-} from "@heroicons/react/24/outline";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { ITheme } from "../pages/_app";
 
-interface Props {}
+interface Props {
+  theme: ITheme;
+  handleThemeChange: () => void;
+}
 
-const Header: React.FC<Props> = () => {
+const Header: React.FC<Props> = ({ theme, handleThemeChange }) => {
   const router = useRouter();
   const isMoney = router.pathname.includes("/money") ? true : false;
 
   return (
-    <div className="h-14 flex items-center justify-between px-4 border-b fixed inset-0 z-10">
+    <div className="h-14 flex items-center justify-between px-4 border-b fixed inset-0 z-10 dark:bg-slate-900 dark:text-white">
       <h2 className="text-2xl font-bold">
         {format(new Date(), "eeee, LLLL do")}
       </h2>
@@ -63,11 +62,15 @@ const Header: React.FC<Props> = () => {
           </li>
         </ul>
       </nav>
-      {/* {isMoney && (
-        <button className="w-7 h-7 text-gray-900">
-          <ChartBarSquareIcon />
+      <div>
+        <button onClick={handleThemeChange} className="flex items-center">
+          {theme === "light" ? (
+            <SunIcon className="w-6 h-6" />
+          ) : (
+            <MoonIcon className="w-6 h-6" />
+          )}
         </button>
-      )} */}
+      </div>
     </div>
   );
 };

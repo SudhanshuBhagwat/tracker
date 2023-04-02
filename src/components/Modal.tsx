@@ -56,7 +56,7 @@ const Modal: React.FC<PropsWithChildren & Props> = ({ onClose, children }) => {
               ease: EASE,
             },
           }}
-          className="z-0 flex flex-col w-full h-full bg-white rounded-t-xl shadow-xl overflow-auto"
+          className="z-0 flex flex-col w-full h-full rounded-t-xl shadow-xl overflow-auto bg-white dark:bg-slate-900 dark:text-white"
         >
           {children}
         </motion.div>

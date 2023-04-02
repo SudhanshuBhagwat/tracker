@@ -119,7 +119,7 @@ const WeeklyCalendar = ({ today }: { today: Date }) => {
                       !isSameDay(day, currentDay) &&
                         !isToday(day) &&
                         isSameMonth(day, firstDayofWeek) &&
-                        "text-gray-900",
+                        "text-gray-900 dark:text-white",
                       !isSameDay(day, currentDay) &&
                         !isToday(day) &&
                         !isSameMonth(day, firstDayofWeek) &&
@@ -215,7 +215,7 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                     !isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       isSameMonth(day, firstDayCurrentMonth) &&
-                      "text-gray-900",
+                      "text-gray-900 dark:text-white",
                     !isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&

@@ -123,7 +123,7 @@ const Money: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col flex-1 sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
+    <div className="h-full flex flex-col flex-1 sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
       <section className="sm:hidden">
         <Calendar
           mode="weekly"
@@ -138,7 +138,7 @@ const Money: React.FC = () => {
               <h2 className="text-2xl font-semibold">Money</h2>
               <div className="flex space-x-2">
                 <button
-                  className="flex items-center bg-green-200 p-2 rounded-md"
+                  className="flex items-center bg-green-200 dark:text-black p-2 rounded-md"
                   onClick={() => {
                     setIsUploadOpen((open) => !open);
                   }}
@@ -148,7 +148,7 @@ const Money: React.FC = () => {
                   </span>
                 </button>
                 <button
-                  className="flex items-center bg-green-200 px-2 py-1 rounded-md"
+                  className="flex items-center bg-green-200 dark:text-black px-2 py-1 rounded-md"
                   onClick={() => {
                     setMode("ADD");
                     setSelectedExpense(null);
@@ -228,7 +228,7 @@ const AllExpenses = ({ expenses }: { expenses: ExpenseType[] }) => {
           <span>No Expenses added</span>
           <span className="flex items-center">
             Press
-            <button className="flex items-center bg-green-200 px-2 py-1 rounded-md mx-2">
+            <button className="flex items-center bg-green-200 dark:text-black px-2 py-1 rounded-md mx-2">
               <span className="mr-1">
                 <PlusIcon className="h-4 w-4" />
               </span>

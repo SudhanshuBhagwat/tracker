@@ -150,7 +150,7 @@ const Profile: React.FC<Props> = () => {
               className={`${
                 nav.slug ===
                 new URLSearchParams(window.location.search).get("page")
-                  ? "bg-slate-200 font-bold"
+                  ? "bg-slate-200 font-bold dark:text-black"
                   : ""
               } w-full px-6 py-2 rounded-sm`}
             >
@@ -216,11 +216,15 @@ const ProfileComp: React.FC<ProfileCompProps> = ({
           <div className="space-y-4">
             <div className="flex justify-between">
               <label className="font-medium">Name</label>
-              <span className="text-gray-700">{currentUser?.displayName}</span>
+              <span className="text-gray-700 dark:text-gray-300">
+                {currentUser?.displayName}
+              </span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">Email</label>
-              <span className="text-gray-700">{currentUser?.email}</span>
+              <span className="text-gray-700 dark:text-gray-300">
+                {currentUser?.email}
+              </span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -229,7 +233,9 @@ const ProfileComp: React.FC<ProfileCompProps> = ({
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span className="text-gray-700">{completedHabits}</span>
+              <span className="text-gray-700 dark:text-gray-300">
+                {completedHabits}
+              </span>
             </div>
             <div className="flex justify-between">
               <label className="font-medium">
@@ -238,7 +244,9 @@ const ProfileComp: React.FC<ProfileCompProps> = ({
                   ({format(new Date(), "LLLL")})
                 </span>
               </label>
-              <span className="text-gray-700">{totalExpenses} ₹</span>
+              <span className="text-gray-700 dark:text-gray-300">
+                {totalExpenses} ₹
+              </span>
             </div>
           </div>
         </div>

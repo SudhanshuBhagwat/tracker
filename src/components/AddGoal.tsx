@@ -109,7 +109,7 @@ const AddGoal: React.FC<Props> = ({
   return (
     <Modal onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
-        <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
+        <div className="w-full flex justify-between fixed p-4 rounded-t-xl">
           <button
             className="text-lg font-md font-normal text-blue-400"
             onClick={handleClose}
@@ -185,12 +185,15 @@ const AddGoal: React.FC<Props> = ({
                 setTitle(e.target.value);
                 setMessage("");
               }}
-              className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
+              className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400 dark:text-black"
               placeholder="Please enter a title for you goal"
             />
           </div>
           <div className="w-full flex items-center justify-between px-3 py-2 bg-gray-100 rounded-md">
-            <label htmlFor="everyday" className="text-lg font-medium">
+            <label
+              htmlFor="everyday"
+              className="text-lg font-medium dark:text-black"
+            >
               Everyday
             </label>
             <Checkbox
@@ -213,7 +216,7 @@ const AddGoal: React.FC<Props> = ({
             }}
           >
             <div className="w-full flex flex-col items-start space-y-3">
-              <span className="text-gray-400 text-base text-left">
+              <span className="text-gray-400 dark:text-black text-base text-left">
                 {times} {times > 1 ? "times" : "time"} per week
               </span>
               <RadioGroup
@@ -311,7 +314,7 @@ const AddGoal: React.FC<Props> = ({
             </div>
           </CustomDisclosure>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <div className="flex justify-between items-center w-full text-lg font-medium text-left">
+            <div className="flex justify-between items-center w-full text-lg font-medium text-left dark:text-black">
               <span>Repeat for months</span>
             </div>
             <div className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">

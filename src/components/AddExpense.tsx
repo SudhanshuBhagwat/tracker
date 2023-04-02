@@ -119,7 +119,7 @@ const AddExpense: React.FC<Props> = ({
   return (
     <Modal onClose={setIsOpen}>
       <div className="h-full w-full flex flex-col overflow-y-scroll pb-4">
-        <div className="w-full flex justify-between fixed p-4 bg-white rounded-t-xl">
+        <div className="w-full flex justify-between fixed p-4 rounded-t-xl">
           <button
             className="text-lg font-md font-normal text-red-400"
             onClick={handleIsOpen}
@@ -198,7 +198,7 @@ const AddExpense: React.FC<Props> = ({
                 setMessage("");
                 setTitle(e.target.value);
               }}
-              className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
+              className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400 dark:text-black"
               placeholder="Please enter a title for you expense"
             />
           </div>
@@ -215,7 +215,7 @@ const AddExpense: React.FC<Props> = ({
                 setMessage("");
                 setSpent(e.target.value);
               }}
-              className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400"
+              className="w-full rounded-md mt-1 border-gray-400 placeholder:text-gray-400 dark:text-black"
               placeholder="Please enter the amount of you expense"
             />
           </div>
@@ -273,7 +273,7 @@ const AddExpense: React.FC<Props> = ({
             </div>
           </CustomDisclosure>
           <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
-            <div className="flex justify-between items-center w-full text-lg font-medium text-left">
+            <div className="flex justify-between items-center w-full text-lg font-medium text-left dark:text-black">
               <span>Category</span>
             </div>
             <div className="pt-2 pb-2 w-full flex flex-col items-start transition space-y-2">

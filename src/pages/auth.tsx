@@ -25,7 +25,7 @@ const Auth = () => {
     async function getUser() {
       const result = await getRedirectResult(auth);
       if (result) {
-        router.push("/");
+        router.replace("/");
       }
     }
     getUser();

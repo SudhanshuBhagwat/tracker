@@ -20,7 +20,7 @@ const CustomDisclosure: React.FC<Props> = ({
   return (
     <div className="w-full bg-gray-100 px-3 py-2 rounded-md transition">
       <Switch.Group>
-        <div className="flex justify-between items-center w-full text-lg font-medium text-left">
+        <div className="flex justify-between items-center w-full text-lg font-medium text-left dark:text-black">
           <Switch.Label className="mr-4">{label}</Switch.Label>
           <Switch
             as="div"
