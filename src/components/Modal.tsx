@@ -1,6 +1,6 @@
-import { Transition, Dialog } from "@headlessui/react";
+import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
-import { Fragment, PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 
 interface Props {
   onClose: (value: boolean) => void;
@@ -17,8 +17,7 @@ const Modal: React.FC<PropsWithChildren & Props> = ({ onClose, children }) => {
       onClose={onClose}
     >
       <div className="flex flex-col justify-center h-full pt-4 text-center sm:block sm:p-0">
-        <Dialog.Overlay
-          as={motion.div}
+        <motion.div
           initial={{
             opacity: 0,
           }}
