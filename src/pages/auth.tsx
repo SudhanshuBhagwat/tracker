@@ -1,7 +1,7 @@
 import {
   getRedirectResult,
   GoogleAuthProvider,
-  signInWithRedirect,
+  signInWithPopup,
 } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -34,7 +34,7 @@ const Auth = () => {
   async function doAuth() {
     try {
       setIsLoading(true);
-      await signInWithRedirect(auth, new GoogleAuthProvider());
+      await signInWithPopup(auth, new GoogleAuthProvider());
       setIsLoading(false);
     } catch (err) {
       console.error(err);
