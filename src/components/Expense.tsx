@@ -1,9 +1,9 @@
 import React from "react";
-import { Expense } from "../types";
+import { Expense as IExpense } from "../types";
 import { ExpenseIconMap } from "./AddExpense";
 
 interface Props {
-  expense: Expense;
+  expense: IExpense;
   handleClick?: () => void;
 }
 
