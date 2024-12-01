@@ -23,6 +23,8 @@ import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 import Calendar from "../components/Calendar";
 
+const GOAL_COLORS = [];
+
 const fetcher = async (
   url: string,
   uid: string | undefined
@@ -79,6 +81,12 @@ const Home: NextPage = () => {
   const { addGoal, updateGoal, removeGoal } = useFirestore();
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = useState(today);
+  const completedGoals = data?.todaysGoals.reduce((acc: number, goal: GoalType) => {
+    if(goal.completed.includes(format(today, "yyyy/MM/dd"))) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
 
   useEffect(() => {
     if (!fetchingUser && !currentUser) {
@@ -141,6 +149,14 @@ const Home: NextPage = () => {
 
   return (
     <div className="h-full flex flex-1 flex-col sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-7">
+      <section className="sm:hidden">
+        <Calendar
+          mode="weekly"
+          selectedDay={selectedDay}
+          setSelectedDay={setSelectedDay}
+          todayBackground={completedGoals === data.todaysGoals.length ? "bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500" : "bg-red-500"}
+        />
+      </section>
       <section className="lg:col-span-5 p-4 sm:col-span-1 md:col-span-1 lg:p-0">
         <div className="w-full space-y-4 lg:space-y-0 lg:mt-0 lg:grid lg:grid-cols-2 lg:h-full">
           <div className="flex flex-col lg:border-r lg:p-4">

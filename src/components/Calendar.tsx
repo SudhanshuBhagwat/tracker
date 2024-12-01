@@ -23,6 +23,7 @@ interface Props {
   mode: "monthly" | "weekly";
   selectedDay: Date;
   setSelectedDay: (value: Date) => void;
+  todayBackground?: string;
 }
 
 function classNames(...classes: (string | boolean)[]) {
@@ -39,17 +40,17 @@ let colStartClasses = [
   "col-start-7",
 ];
 
-const Calendar: React.FC<Props> = ({ mode = "weekly" }) => {
+const Calendar: React.FC<Props> = ({ mode = "weekly", todayBackground }) => {
   const today = startOfToday();
 
   return mode === "monthly" ? (
-    <MonthlyCalendar today={today} />
+    <MonthlyCalendar today={today} todayBackground={todayBackground} />
   ) : (
-    <WeeklyCalendar today={today} />
+    <WeeklyCalendar today={today} todayBackground={todayBackground} />
   );
 };
 
-const WeeklyCalendar = ({ today }: { today: Date }) => {
+const WeeklyCalendar = ({ today, todayBackground }: { today: Date, todayBackground?: string }) => {
   const router = useRouter();
   const { day } = router.query;
   const currentDay = (day && parseISO(day as string)) || today;
@@ -126,7 +127,7 @@ const WeeklyCalendar = ({ today }: { today: Date }) => {
                         "text-gray-400",
                       isSameDay(day, currentDay) &&
                         isToday(day) &&
-                        "bg-red-500",
+                        (todayBackground ?? "bg-red-500"),
                       isSameDay(day, currentDay) &&
                         !isToday(day) &&
                         "bg-gray-900",
@@ -150,7 +151,7 @@ const WeeklyCalendar = ({ today }: { today: Date }) => {
   );
 };
 
-const MonthlyCalendar = ({ today }: { today: Date }) => {
+const MonthlyCalendar = ({ today, todayBackground }: { today: Date, todayBackground?: string }) => {
   const [selectedDay, setSelectedDay] = useState(today);
   let [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
   let firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
@@ -220,7 +221,8 @@ const MonthlyCalendar = ({ today }: { today: Date }) => {
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&
                       "text-gray-400",
-                    isSameDay(day, selectedDay) && isToday(day) && "bg-primary",
+                    isSameDay(day, selectedDay) && isToday(day) && 
+                        (todayBackground ?? "bg-red-500"),
                     isSameDay(day, selectedDay) &&
                       !isToday(day) &&
                       "bg-gray-900",
