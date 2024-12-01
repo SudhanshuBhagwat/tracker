@@ -37,8 +37,8 @@ const Goal: React.FC<Props> = ({ goal, disable, handleClick, handleDone }) => {
   }
 
   return (
-    <div className="flex justify-between items-center p-4 rounded-md bg-gray-100">
-      <div className="flex flex-col" onClick={handleClick}>
+    <div className="flex items-center p-4 rounded-md bg-gray-100">
+      <div className="flex flex-col flex-1" onClick={handleClick}>
         <h3 className="text-md font-medium text-black">{goal.title}</h3>
         <span className="text-xs mt-[2px] text-gray-400">{getSpan()}</span>
       </div>

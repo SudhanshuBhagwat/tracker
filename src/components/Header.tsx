@@ -15,7 +15,7 @@ const Header: React.FC<Props> = ({ theme, handleThemeChange }) => {
   const isMoney = router.pathname.includes("/money") ? true : false;
 
   return (
-    <div className="h-14 flex items-center justify-between px-4 border-b fixed inset-0 z-10 dark:bg-slate-900 dark:text-white">
+    <div className="h-14 flex items-center justify-between px-4 border-b fixed inset-0 z-10 bg-white dark:bg-slate-900 dark:text-white">
       <h2 className="text-2xl font-bold">
         {format(new Date(), "eeee, LLLL do")}
       </h2>

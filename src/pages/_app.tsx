@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       {!fetchingUser && currentUser ? (
         <>
           <Header theme={theme} handleThemeChange={handleThemeChange} />
-          <main className="flex-1 mt-14 pb-14 sm:pb-0 min-h-0 overflow-y-auto dark:bg-slate-900 dark:text-white">
+          <main className="flex-1 mt-14 mb-14 sm:mb-0 min-h-0 overflow-y-auto dark:bg-slate-900 dark:text-white">
             <Component {...pageProps} />
           </main>
           <Footer />
