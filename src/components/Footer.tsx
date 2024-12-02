@@ -6,7 +6,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { isInstallPromptAvailable } from "../utils";
+import { isIOSStandalone } from "../utils";
 
 interface Props {}
 
@@ -15,7 +15,7 @@ const Footer: React.FC<Props> = () => {
   return (
     <footer className="h-14 sfib w-full flex border-t z-10 fixed bottom-0 bg-white dark:bg-slate-900 dark:text-white sm:hidden">
       <nav className="w-full h-full flex items-center px-8">
-        <ul className={`w-full flex items-center justify-between ${isInstallPromptAvailable() && 'mb-4'}`}>
+        <ul className={`w-full flex items-center justify-between ${isIOSStandalone() && 'mb-4'}`}>
           <li>
             <Link passHref={true} href="/">
               <SparklesIcon
