@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAuth } from "../config/firebase";
 import { useEffect, useState } from "react";
+import { isInstallPromptAvailable } from "../utils";
 
 export type ITheme = "light" | "dark";
 
@@ -52,7 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       {!fetchingUser && currentUser ? (
         <>
           <Header theme={theme} handleThemeChange={handleThemeChange} />
-          <main className="flex-1 mt-14 mb-14 sm:mb-0 min-h-0 overflow-y-auto dark:bg-slate-900 dark:text-white">
+          <main className={`flex-1 mt-14 sm:mb-0 min-h-0 overflow-y-auto dark:bg-slate-900 dark:text-white ${isInstallPromptAvailable() ? "mb-16" : "mb-14"}`}>
             <Component {...pageProps} />
           </main>
           <Footer />
